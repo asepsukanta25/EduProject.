@@ -6,27 +6,45 @@ const Navbar: React.FC = () => {
   const location = useLocation();
 
   const isActive = (path: string) => {
-    return location.pathname === path ? 'text-black font-bold border-b-2 border-yellow-400' : 'text-gray-600 hover:text-black';
+    return location.pathname === path 
+      ? 'text-black font-bold border-b-2 border-yellow-400' 
+      : 'text-gray-500 hover:text-black border-b-2 border-transparent';
   };
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          <div className="flex items-center">
+          {/* Logo Section */}
+          <div className="flex-shrink-0">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-yellow-400 font-bold shadow-sm">E</div>
-              <span className="text-xl font-bold text-gray-900 tracking-tight">EduProject</span>
+              <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center text-yellow-400 font-black shadow-md transform -rotate-3 hover:rotate-0 transition-transform">
+                E
+              </div>
+              <span className="text-xl font-black text-gray-900 tracking-tighter hidden sm:block">
+                EduProject
+              </span>
             </Link>
           </div>
-          <div className="flex space-x-8">
-            <Link to="/" className={`px-1 py-2 text-sm transition-colors ${isActive('/')}`}>
+
+          {/* Navigation Links */}
+          <div className="flex space-x-3 sm:space-x-8 h-full items-center">
+            <Link 
+              to="/" 
+              className={`h-full flex items-center px-1 text-[13px] sm:text-sm transition-all duration-300 ${isActive('/')}`}
+            >
               Perpustakaan
             </Link>
-            <Link to="/about" className={`px-1 py-2 text-sm transition-colors ${isActive('/about')}`}>
+            <Link 
+              to="/about" 
+              className={`h-full flex items-center px-1 text-[13px] sm:text-sm transition-all duration-300 ${isActive('/about')}`}
+            >
               Tentang Saya
             </Link>
-            <Link to="/admin" className={`px-1 py-2 text-sm transition-colors ${isActive('/admin')}`}>
+            <Link 
+              to="/admin" 
+              className={`h-full flex items-center px-1 text-[13px] sm:text-sm transition-all duration-300 ${isActive('/admin')}`}
+            >
               Admin
             </Link>
           </div>

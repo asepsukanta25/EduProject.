@@ -13,7 +13,7 @@ const Admin: React.FC = () => {
   const [error, setError] = useState('');
   const [syncing, setSyncing] = useState(false);
   
-  const [toast, setToast] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
+  const [toast, setToast] = useState<{ show: boolean; message: string; isError?: boolean }>({ show: false, message: '', isError: false });
 
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
@@ -24,11 +24,11 @@ const Admin: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  const showNotification = (message: string) => {
-    setToast({ show: true, message });
+  const showNotification = (message: string, isError = false) => {
+    setToast({ show: true, message, isError });
     setTimeout(() => {
-      setToast({ show: false, message: '' });
-    }, 3000);
+      setToast({ show: false, message: '', isError: false });
+    }, 4000);
   };
 
   const refreshData = async (manual = false) => {
@@ -41,8 +41,8 @@ const Admin: React.FC = () => {
       if (manual) {
         showNotification('Data terbaru berhasil ditarik dari Cloud!');
       }
-    } catch (err) {
-      showNotification('Gagal menarik data dari Cloud.');
+    } catch (err: any) {
+      showNotification('Gagal menarik data: ' + (err.message || 'Cek koneksi'), true);
     } finally {
       setSyncing(false);
     }
@@ -62,19 +62,32 @@ const Admin: React.FC = () => {
     e.preventDefault();
     if (!editingProject) return;
     setSyncing(true);
-    await storageService.saveProject(editingProject);
-    await refreshData();
-    setShowProjectModal(false);
-    setEditingProject(null);
-    showNotification('Proyek berhasil disinkronkan ke Cloud!');
+    try {
+      await storageService.saveProject(editingProject);
+      await refreshData();
+      setShowProjectModal(false);
+      setEditingProject(null);
+      showNotification('Proyek berhasil disinkronkan ke Cloud!');
+    } catch (err: any) {
+      console.error(err);
+      showNotification('GAGAL SIMPAN: ' + (err.message || 'Cek struktur tabel Supabase'), true);
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const handleDeleteProject = async (id: string) => {
     if (window.confirm('Hapus proyek ini dari cloud?')) {
       setSyncing(true);
-      await storageService.deleteProject(id);
-      await refreshData();
-      showNotification('Proyek berhasil dihapus!');
+      try {
+        await storageService.deleteProject(id);
+        await refreshData();
+        showNotification('Proyek berhasil dihapus!');
+      } catch (err: any) {
+        showNotification('Gagal menghapus: ' + err.message, true);
+      } finally {
+        setSyncing(false);
+      }
     }
   };
 
@@ -87,9 +100,14 @@ const Admin: React.FC = () => {
   const handleSaveProfile = async () => {
     if (!profile) return;
     setSyncing(true);
-    await storageService.saveProfile(profile);
-    setSyncing(false);
-    showNotification('Profil Admin berhasil diperbarui di Cloud!');
+    try {
+      await storageService.saveProfile(profile);
+      showNotification('Profil Admin berhasil diperbarui!');
+    } catch (err: any) {
+      showNotification('Gagal simpan profil: ' + err.message, true);
+    } finally {
+      setSyncing(false);
+    }
   };
 
   if (!isAuthenticated) {
@@ -125,23 +143,30 @@ const Admin: React.FC = () => {
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 relative">
       {toast.show && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="bg-black text-yellow-400 px-8 py-4 rounded-2xl shadow-2xl border-2 border-yellow-400 flex items-center space-x-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-            </svg>
+          <div className={`${toast.isError ? 'bg-red-600 text-white border-red-800' : 'bg-black text-yellow-400 border-yellow-400'} px-8 py-4 rounded-2xl shadow-2xl border-2 flex items-center space-x-3`}>
+            {toast.isError ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
             <span className="font-black tracking-tight">{toast.message}</span>
           </div>
         </div>
       )}
 
       {syncing && (
-        <div className="fixed top-20 right-8 z-50 bg-black text-yellow-400 px-4 py-2 rounded-full text-xs font-black animate-pulse flex items-center space-x-2 shadow-2xl">
+        <div className="fixed top-20 right-8 z-50 bg-black text-yellow-400 px-4 py-2 rounded-full text-xs font-black animate-pulse flex items-center space-x-2 shadow-2xl border border-yellow-400/30">
           <div className="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
           <span>SINKRONISASI CLOUD...</span>
         </div>
       )}
+
       <div className="max-w-6xl mx-auto space-y-12">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gray-900 p-8 rounded-[2rem] text-white">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gray-900 p-8 rounded-[2rem] text-white shadow-2xl border-b-4 border-yellow-400">
           <div>
             <h1 className="text-3xl font-black text-yellow-400">Dashboard Admin</h1>
             <p className="text-gray-400">Status: Terhubung ke Supabase</p>
@@ -198,7 +223,7 @@ const Admin: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-8 py-6 flex items-center space-x-5">
-                          <img src={project.imageUrl} className="w-14 h-14 rounded-2xl object-cover shadow-md transition-transform group-hover:scale-110" alt="" />
+                          <img src={project.imageUrl || 'https://via.placeholder.com/150'} className="w-14 h-14 rounded-2xl object-cover shadow-md transition-transform group-hover:scale-110" alt="" />
                           <div>
                             <div className="font-bold text-gray-900">{project.title}</div>
                             <div className="text-xs text-gray-400">{project.category || 'Tanpa Label'}</div>
@@ -239,45 +264,47 @@ const Admin: React.FC = () => {
 
       {showProjectModal && editingProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 animate-in zoom-in-95 duration-200">
             <div className="p-8 bg-yellow-400 flex justify-between items-center">
               <h3 className="text-2xl font-black text-black">{editingProject.id ? 'Edit Cloud Project' : 'Tambah Baru'}</h3>
-              <button onClick={() => setShowProjectModal(false)} className="bg-black text-white p-2 rounded-xl">X</button>
+              <button onClick={() => setShowProjectModal(false)} className="bg-black text-white p-2 rounded-xl hover:rotate-90 transition-transform font-black w-10 h-10">X</button>
             </div>
             <form onSubmit={handleSaveProject} className="p-8 space-y-5 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Judul Proyek</label>
-                  <input required value={editingProject.title} onChange={(e) => setEditingProject({...editingProject, title: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold" placeholder="Judul" />
+                  <input required value={editingProject.title} onChange={(e) => setEditingProject({...editingProject, title: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold focus:border-yellow-400 outline-none transition-all" placeholder="Judul" />
                 </div>
                 
                 <div className="col-span-1">
                   <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Urutan (Angka)</label>
-                  <input type="number" required value={editingProject.order} onChange={(e) => setEditingProject({...editingProject, order: parseInt(e.target.value) || 0})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-900 text-yellow-400 font-black" />
+                  <input type="number" required value={editingProject.order} onChange={(e) => setEditingProject({...editingProject, order: parseInt(e.target.value) || 0})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-900 text-yellow-400 font-black focus:border-yellow-300 outline-none transition-all" />
                 </div>
 
                 <div className="col-span-1">
                   <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Kategori</label>
-                  <input value={editingProject.category} onChange={(e) => setEditingProject({...editingProject, category: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold text-yellow-600" placeholder="Kategori" />
+                  <input value={editingProject.category} onChange={(e) => setEditingProject({...editingProject, category: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold text-yellow-600 focus:border-yellow-400 outline-none transition-all" placeholder="Kategori" />
                 </div>
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">URL Gambar Preview</label>
-                <input required value={editingProject.imageUrl} onChange={(e) => setEditingProject({...editingProject, imageUrl: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50" placeholder="URL Gambar" />
+                <input required value={editingProject.imageUrl} onChange={(e) => setEditingProject({...editingProject, imageUrl: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 focus:border-yellow-400 outline-none transition-all" placeholder="URL Gambar" />
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Link Eksternal Aplikasi</label>
-                <input required value={editingProject.externalUrl} onChange={(e) => setEditingProject({...editingProject, externalUrl: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50" placeholder="Link Aplikasi" />
+                <input required value={editingProject.externalUrl} onChange={(e) => setEditingProject({...editingProject, externalUrl: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 focus:border-yellow-400 outline-none transition-all" placeholder="Link Aplikasi" />
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Deskripsi Singkat</label>
-                <textarea required rows={3} value={editingProject.description} onChange={(e) => setEditingProject({...editingProject, description: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 resize-none" placeholder="Deskripsi" />
+                <textarea required rows={3} value={editingProject.description} onChange={(e) => setEditingProject({...editingProject, description: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 resize-none focus:border-yellow-400 outline-none transition-all" placeholder="Deskripsi" />
               </div>
 
-              <button type="submit" className="w-full bg-black text-yellow-400 font-black py-5 rounded-2xl shadow-xl hover:bg-yellow-400 hover:text-black transition-all">SIMPAN KE CLOUD</button>
+              <button type="submit" disabled={syncing} className="w-full bg-black text-yellow-400 font-black py-5 rounded-2xl shadow-xl hover:bg-yellow-400 hover:text-black transition-all disabled:opacity-50">
+                {syncing ? 'MENYIMPAN...' : 'SIMPAN KE CLOUD'}
+              </button>
             </form>
           </div>
         </div>

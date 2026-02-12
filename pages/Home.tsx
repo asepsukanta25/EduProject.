@@ -17,17 +17,24 @@ const Home: React.FC = () => {
         return;
       }
       setLoading(true);
-      const data = await storageService.getProjects();
-      setProjects(data);
-      setLoading(false);
+      try {
+        const data = await storageService.getProjects();
+        setProjects(data);
+      } catch (err) {
+        console.error("Gagal muat data:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProjects();
   }, []);
 
-  const filteredProjects = projects.filter(p => 
-    p.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    p.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProjects = projects.filter(p => {
+    const title = p.title || '';
+    const cat = p.category || '';
+    return title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+           cat.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   if (!supabase) {
     return (
@@ -51,26 +58,43 @@ const Home: React.FC = () => {
           <div className="mb-8 animate-bounce-slow">
             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiaW5WrQkMJZtb_G-mIWuX6s77cyjLrVAyLclBI-4_ELGMtduNtr5wXjnh5v5-Sv301QHZwtyclFhtVc0PZM4wpirILYbfWJWg1f1kwzmMjLWwdSwXjU-v_F6VSBIqIhB9EDHumNy1E1QPhQJ5x3QA1oc7QUYYEpXyTGzXXkeJrE6lTUhyphenhyphenFIqtYDiPRZnY/s16000/Screenshot_28.png" className="h-24 md:h-32 mx-auto" alt="Logo" />
           </div>
-          <p className="text-xl font-black uppercase mb-10">Katalog Proyek Edukasi</p>
-          <input 
-            type="text" 
-            placeholder="Cari proyek..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-lg px-8 py-4 rounded-full shadow-2xl focus:outline-none border-2 border-transparent focus:border-black"
-          />
+          <p className="text-xl font-black uppercase mb-10 tracking-widest text-black/80">Katalog Proyek Edukasi</p>
+          <div className="relative max-w-lg mx-auto">
+            <input 
+              type="text" 
+              placeholder="Cari berdasarkan judul atau kategori..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-8 py-5 rounded-full shadow-2xl focus:outline-none border-2 border-transparent focus:border-black transition-all text-lg font-medium"
+            />
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
         </div>
+        {/* Background blobs for aesthetics */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-black/5 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
       </section>
 
       <section className="max-w-7xl mx-auto px-4 -mt-10 relative z-10">
         {loading ? (
-          <div className="py-20 text-center font-bold">Memuat data cloud...</div>
+          <div className="py-32 text-center">
+             <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-yellow-400 mb-4"></div>
+             <p className="font-black text-gray-400 uppercase tracking-widest">Sinkronisasi Cloud...</p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map(p => <ProjectCard key={p.id} project={p} />)}
             {filteredProjects.length === 0 && (
-              <div className="col-span-full py-20 bg-gray-50 rounded-3xl text-center border-2 border-dashed border-gray-200">
-                <p className="text-gray-400 font-bold">Belum ada proyek di database cloud Anda.</p>
+              <div className="col-span-full py-32 bg-gray-50 rounded-[3rem] text-center border-4 border-dashed border-gray-100">
+                <div className="text-6xl mb-6">🔍</div>
+                <h3 className="text-2xl font-black text-gray-900 mb-2">Proyek Tidak Ditemukan</h3>
+                <p className="text-gray-400 font-bold max-w-sm mx-auto leading-relaxed">
+                  Coba gunakan kata kunci lain atau pastikan proyek sudah ditambahkan di Dashboard Admin.
+                </p>
               </div>
             )}
           </div>
