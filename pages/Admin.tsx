@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
 import { Project, DeveloperProfile } from '../types';
 import { storageService } from '../services/storageService';
+import React, { useState, useEffect } from 'react';
 
 const ADMIN_CODE = 'Indme&781l';
 
@@ -12,6 +12,9 @@ const Admin: React.FC = () => {
   const [profile, setProfile] = useState<DeveloperProfile | null>(null);
   const [error, setError] = useState('');
   const [syncing, setSyncing] = useState(false);
+  
+  // State untuk Notifikasi
+  const [toast, setToast] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
 
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
@@ -21,6 +24,13 @@ const Admin: React.FC = () => {
       refreshData();
     }
   }, [isAuthenticated]);
+
+  const showNotification = (message: string) => {
+    setToast({ show: true, message });
+    setTimeout(() => {
+      setToast({ show: false, message: '' });
+    }, 3000);
+  };
 
   const refreshData = async () => {
     setSyncing(true);
@@ -49,6 +59,7 @@ const Admin: React.FC = () => {
     await refreshData();
     setShowProjectModal(false);
     setEditingProject(null);
+    showNotification('Proyek berhasil disinkronkan ke Cloud!');
   };
 
   const handleDeleteProject = async (id: string) => {
@@ -56,6 +67,7 @@ const Admin: React.FC = () => {
       setSyncing(true);
       await storageService.deleteProject(id);
       await refreshData();
+      showNotification('Proyek berhasil dihapus!');
     }
   };
 
@@ -70,7 +82,7 @@ const Admin: React.FC = () => {
     setSyncing(true);
     await storageService.saveProfile(profile);
     setSyncing(false);
-    alert('Profil tersinkronisasi ke Cloud!');
+    showNotification('Profil Admin berhasil diperbarui di Cloud!');
   };
 
   if (!isAuthenticated) {
@@ -103,7 +115,19 @@ const Admin: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 relative">
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="bg-black text-yellow-400 px-8 py-4 rounded-2xl shadow-2xl border-2 border-yellow-400 flex items-center space-x-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="font-black tracking-tight">{toast.message}</span>
+          </div>
+        </div>
+      )}
+
       {syncing && (
         <div className="fixed top-20 right-8 z-50 bg-black text-yellow-400 px-4 py-2 rounded-full text-xs font-black animate-pulse flex items-center space-x-2 shadow-2xl">
           <div className="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
@@ -153,9 +177,15 @@ const Admin: React.FC = () => {
             <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-8 space-y-5">
               {profile && (
                 <>
-                  <input name="name" value={profile.name} onChange={handleProfileChange} className="w-full px-5 py-4 rounded-xl bg-gray-50 font-bold" placeholder="Nama" />
-                  <textarea name="bio" value={profile.bio} onChange={handleProfileChange} rows={4} className="w-full px-5 py-4 rounded-xl bg-gray-50" placeholder="Bio" />
-                  <button onClick={handleSaveProfile} className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl">Simpan ke Cloud</button>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-2">Nama Lengkap</label>
+                    <input name="name" value={profile.name} onChange={handleProfileChange} className="w-full px-5 py-4 rounded-xl bg-gray-50 font-bold border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="Nama" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-2">Bio Singkat</label>
+                    <textarea name="bio" value={profile.bio} onChange={handleProfileChange} rows={4} className="w-full px-5 py-4 rounded-xl bg-gray-50 border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="Bio" />
+                  </div>
+                  <button onClick={handleSaveProfile} className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all">Simpan ke Cloud</button>
                 </>
               )}
             </div>
