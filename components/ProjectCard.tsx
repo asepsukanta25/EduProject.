@@ -15,11 +15,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           alt={project.title} 
           className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute top-4 left-4">
-          <span className="bg-yellow-400 text-black text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
-            {project.category}
-          </span>
-        </div>
+        {/* Label hanya muncul jika project.category memiliki isi */}
+        {project.category && (
+          <div className="absolute top-4 left-4">
+            <span className="bg-yellow-400 text-black text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+              {project.category}
+            </span>
+          </div>
+        )}
       </div>
       <div className="p-6 flex flex-col flex-grow">
         <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">

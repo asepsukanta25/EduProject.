@@ -159,7 +159,7 @@ const Admin: React.FC = () => {
                     <tr key={project.id} className="hover:bg-yellow-50/30 transition-colors">
                       <td className="px-8 py-6 flex items-center space-x-5">
                         <img src={project.imageUrl} className="w-14 h-14 rounded-2xl object-cover shadow-md" alt="" />
-                        <div><div className="font-bold text-gray-900">{project.title}</div><div className="text-xs text-gray-400">{project.category}</div></div>
+                        <div><div className="font-bold text-gray-900">{project.title}</div><div className="text-xs text-gray-400">{project.category || 'Tanpa Label'}</div></div>
                       </td>
                       <td className="px-8 py-6 text-right space-x-3">
                         <button onClick={() => { setEditingProject(project); setShowProjectModal(true); }} className="p-3 bg-gray-50 rounded-xl">Edit</button>
@@ -201,11 +201,32 @@ const Admin: React.FC = () => {
               <button onClick={() => setShowProjectModal(false)} className="bg-black text-white p-2 rounded-xl">X</button>
             </div>
             <form onSubmit={handleSaveProject} className="p-8 space-y-5">
-              <input required value={editingProject.title} onChange={(e) => setEditingProject({...editingProject, title: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold" placeholder="Judul" />
-              <input required value={editingProject.imageUrl} onChange={(e) => setEditingProject({...editingProject, imageUrl: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50" placeholder="URL Gambar" />
-              <input required value={editingProject.externalUrl} onChange={(e) => setEditingProject({...editingProject, externalUrl: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50" placeholder="Link Aplikasi" />
-              <textarea required rows={3} value={editingProject.description} onChange={(e) => setEditingProject({...editingProject, description: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 resize-none" placeholder="Deskripsi" />
-              <button type="submit" className="w-full bg-black text-yellow-400 font-black py-5 rounded-2xl">SIMPAN KE CLOUD</button>
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Judul Proyek</label>
+                <input required value={editingProject.title} onChange={(e) => setEditingProject({...editingProject, title: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold" placeholder="Judul" />
+              </div>
+              
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Kategori / Label (Kosongkan jika ingin disembunyikan)</label>
+                <input value={editingProject.category} onChange={(e) => setEditingProject({...editingProject, category: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold text-yellow-600" placeholder="Contoh: Edukasi, Sains, atau Kosongkan" />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">URL Gambar Preview</label>
+                <input required value={editingProject.imageUrl} onChange={(e) => setEditingProject({...editingProject, imageUrl: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50" placeholder="URL Gambar" />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Link Eksternal Aplikasi</label>
+                <input required value={editingProject.externalUrl} onChange={(e) => setEditingProject({...editingProject, externalUrl: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50" placeholder="Link Aplikasi" />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Deskripsi Singkat</label>
+                <textarea required rows={3} value={editingProject.description} onChange={(e) => setEditingProject({...editingProject, description: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 resize-none" placeholder="Deskripsi" />
+              </div>
+
+              <button type="submit" className="w-full bg-black text-yellow-400 font-black py-5 rounded-2xl shadow-xl hover:bg-yellow-400 hover:text-black transition-all">SIMPAN KE CLOUD</button>
             </form>
           </div>
         </div>
