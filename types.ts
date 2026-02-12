@@ -6,6 +6,7 @@ export interface Project {
   imageUrl: string;
   externalUrl: string;
   category: string;
+  order: number;
 }
 
 export interface DeveloperProfile {

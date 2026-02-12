@@ -8,7 +8,9 @@ export const INITIAL_PROJECTS: Project[] = [
     description: 'Aplikasi interaktif untuk membantu siswa memahami konsep kalkulus dengan visualisasi dinamis.',
     imageUrl: 'https://picsum.photos/seed/math/600/400',
     externalUrl: 'https://example.com/math',
-    category: 'Sains'
+    category: 'Sains',
+    // Added order property to fix interface error
+    order: 1
   },
   {
     id: '2',
@@ -16,7 +18,9 @@ export const INITIAL_PROJECTS: Project[] = [
     description: 'Eksperimen kimia aman dalam lingkungan 3D untuk siswa sekolah menengah.',
     imageUrl: 'https://picsum.photos/seed/chem/600/400',
     externalUrl: 'https://example.com/chem',
-    category: 'Sains'
+    category: 'Sains',
+    // Added order property to fix interface error
+    order: 2
   },
   {
     id: '3',
@@ -24,7 +28,9 @@ export const INITIAL_PROJECTS: Project[] = [
     description: 'Garis waktu sejarah Nusantara dengan aset multimedia yang menarik.',
     imageUrl: 'https://picsum.photos/seed/history/600/400',
     externalUrl: 'https://example.com/history',
-    category: 'Sosial'
+    category: 'Sosial',
+    // Added order property to fix interface error
+    order: 3
   }
 ];
 

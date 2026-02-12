@@ -13,7 +13,6 @@ const Admin: React.FC = () => {
   const [error, setError] = useState('');
   const [syncing, setSyncing] = useState(false);
   
-  // State untuk Notifikasi
   const [toast, setToast] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
 
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -32,13 +31,21 @@ const Admin: React.FC = () => {
     }, 3000);
   };
 
-  const refreshData = async () => {
+  const refreshData = async (manual = false) => {
     setSyncing(true);
-    const pData = await storageService.getProjects();
-    const profData = await storageService.getProfile();
-    setProjects(pData);
-    setProfile(profData);
-    setSyncing(false);
+    try {
+      const pData = await storageService.getProjects();
+      const profData = await storageService.getProfile();
+      setProjects(pData);
+      setProfile(profData);
+      if (manual) {
+        showNotification('Data terbaru berhasil ditarik dari Cloud!');
+      }
+    } catch (err) {
+      showNotification('Gagal menarik data dari Cloud.');
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -116,7 +123,6 @@ const Admin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 relative">
-      {/* Toast Notification */}
       {toast.show && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="bg-black text-yellow-400 px-8 py-4 rounded-2xl shadow-2xl border-2 border-yellow-400 flex items-center space-x-3">
@@ -140,33 +146,71 @@ const Admin: React.FC = () => {
             <h1 className="text-3xl font-black text-yellow-400">Dashboard Admin</h1>
             <p className="text-gray-400">Status: Terhubung ke Supabase</p>
           </div>
-          <div className="flex space-x-4">
-            <button onClick={() => { setEditingProject({ id: '', title: '', description: '', imageUrl: '', externalUrl: '', category: 'Edukasi' }); setShowProjectModal(true); }} className="bg-yellow-400 text-black px-6 py-4 rounded-2xl font-black">Tambah Proyek</button>
-            <button onClick={() => setIsAuthenticated(false)} className="bg-white/10 text-white px-6 py-4 rounded-2xl font-bold">Keluar</button>
+          <div className="flex flex-wrap gap-4">
+            <button 
+              onClick={() => refreshData(true)} 
+              disabled={syncing}
+              className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-2xl font-bold transition-all disabled:opacity-50"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${syncing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>Tarik Data Cloud</span>
+            </button>
+            <button 
+              onClick={() => { setEditingProject({ id: '', title: '', description: '', imageUrl: '', externalUrl: '', category: 'Edukasi', order: (projects.length + 1) }); setShowProjectModal(true); }} 
+              className="bg-yellow-400 text-black px-6 py-4 rounded-2xl font-black shadow-lg shadow-yellow-400/20 hover:-translate-y-1 transition-all"
+            >
+              Tambah Proyek
+            </button>
+            <button onClick={() => setIsAuthenticated(false)} className="bg-white/5 hover:bg-white/10 text-white/60 px-6 py-4 rounded-2xl font-bold transition-all">Keluar</button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-6">
-            <h2 className="text-2xl font-black text-gray-900">Katalog Proyek</h2>
+            <h2 className="text-2xl font-black text-gray-900 flex items-center space-x-3">
+              <span>Katalog Proyek</span>
+              {projects.length > 0 && <span className="text-xs bg-gray-100 text-gray-400 px-3 py-1 rounded-full">{projects.length} Total</span>}
+            </h2>
             <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden">
-              <table className="w-full text-left">
+              <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-50 text-gray-400 uppercase text-[10px] font-black">
-                  <tr><th className="px-8 py-5">Info Proyek</th><th className="px-8 py-5 text-right">Kelola</th></tr>
+                  <tr>
+                    <th className="px-8 py-5 w-16">Urut</th>
+                    <th className="px-8 py-5">Info Proyek</th>
+                    <th className="px-8 py-5 text-right">Kelola</th>
+                  </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {projects.map((project) => (
-                    <tr key={project.id} className="hover:bg-yellow-50/30 transition-colors">
-                      <td className="px-8 py-6 flex items-center space-x-5">
-                        <img src={project.imageUrl} className="w-14 h-14 rounded-2xl object-cover shadow-md" alt="" />
-                        <div><div className="font-bold text-gray-900">{project.title}</div><div className="text-xs text-gray-400">{project.category || 'Tanpa Label'}</div></div>
-                      </td>
-                      <td className="px-8 py-6 text-right space-x-3">
-                        <button onClick={() => { setEditingProject(project); setShowProjectModal(true); }} className="p-3 bg-gray-50 rounded-xl">Edit</button>
-                        <button onClick={() => handleDeleteProject(project.id)} className="p-3 bg-red-50 text-red-500 rounded-xl">Hapus</button>
+                  {projects.length === 0 && !syncing ? (
+                    <tr>
+                      <td colSpan={3} className="px-8 py-20 text-center">
+                        <p className="text-gray-400 font-bold italic">Cloud Database kosong. Silakan tambah proyek atau tarik data.</p>
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    projects.map((project) => (
+                      <tr key={project.id} className="hover:bg-yellow-50/30 transition-colors group">
+                        <td className="px-8 py-6">
+                          <span className="bg-gray-900 text-yellow-400 text-xs font-black px-3 py-1 rounded-lg">
+                            {project.order}
+                          </span>
+                        </td>
+                        <td className="px-8 py-6 flex items-center space-x-5">
+                          <img src={project.imageUrl} className="w-14 h-14 rounded-2xl object-cover shadow-md transition-transform group-hover:scale-110" alt="" />
+                          <div>
+                            <div className="font-bold text-gray-900">{project.title}</div>
+                            <div className="text-xs text-gray-400">{project.category || 'Tanpa Label'}</div>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 text-right space-x-3">
+                          <button onClick={() => { setEditingProject(project); setShowProjectModal(true); }} className="p-3 bg-gray-50 hover:bg-yellow-100 rounded-xl font-bold text-sm transition-colors">Edit</button>
+                          <button onClick={() => handleDeleteProject(project.id)} className="p-3 bg-red-50 hover:bg-red-500 hover:text-white text-red-500 rounded-xl font-bold text-sm transition-all">Hapus</button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -200,15 +244,22 @@ const Admin: React.FC = () => {
               <h3 className="text-2xl font-black text-black">{editingProject.id ? 'Edit Cloud Project' : 'Tambah Baru'}</h3>
               <button onClick={() => setShowProjectModal(false)} className="bg-black text-white p-2 rounded-xl">X</button>
             </div>
-            <form onSubmit={handleSaveProject} className="p-8 space-y-5">
-              <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Judul Proyek</label>
-                <input required value={editingProject.title} onChange={(e) => setEditingProject({...editingProject, title: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold" placeholder="Judul" />
-              </div>
-              
-              <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Kategori / Label (Kosongkan jika ingin disembunyikan)</label>
-                <input value={editingProject.category} onChange={(e) => setEditingProject({...editingProject, category: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold text-yellow-600" placeholder="Contoh: Edukasi, Sains, atau Kosongkan" />
+            <form onSubmit={handleSaveProject} className="p-8 space-y-5 max-h-[70vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Judul Proyek</label>
+                  <input required value={editingProject.title} onChange={(e) => setEditingProject({...editingProject, title: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold" placeholder="Judul" />
+                </div>
+                
+                <div className="col-span-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Urutan (Angka)</label>
+                  <input type="number" required value={editingProject.order} onChange={(e) => setEditingProject({...editingProject, order: parseInt(e.target.value) || 0})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-900 text-yellow-400 font-black" />
+                </div>
+
+                <div className="col-span-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Kategori</label>
+                  <input value={editingProject.category} onChange={(e) => setEditingProject({...editingProject, category: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-gray-50 font-bold text-yellow-600" placeholder="Kategori" />
+                </div>
               </div>
 
               <div>

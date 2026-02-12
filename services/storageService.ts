@@ -9,7 +9,7 @@ export const storageService = {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('order', { ascending: true }); // Diurutkan berdasarkan nomor urutan (1, 2, 3...)
       
       if (error) throw error;
       return data || [];
@@ -22,16 +22,12 @@ export const storageService = {
   saveProject: async (project: Project): Promise<void> => {
     if (!supabase) return;
     
-    // Hapus ID jika kosong agar Supabase bisa auto-increment
     const { id, ...data } = project;
     
-    // Cek apakah ini update atau insert baru
-    // Jika ID ada isinya, berarti kita sedang mengedit (Update)
     if (id) {
       const { error } = await supabase.from('projects').update(data).eq('id', id);
       if (error) console.error('Update error:', error);
     } else {
-      // Jika ID kosong, berarti tambah baru (Insert)
       const { error } = await supabase.from('projects').insert([data]);
       if (error) console.error('Insert error:', error);
     }
@@ -58,8 +54,6 @@ export const storageService = {
     if (!supabase) return;
     try {
       const { data: existing } = await supabase.from('profiles').select('id').limit(1).maybeSingle();
-      
-      // Bersihkan data profil dari field yang mungkin tidak ada di DB
       const { id, ...profileData } = profile as any;
 
       if (existing) {
