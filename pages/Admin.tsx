@@ -245,17 +245,37 @@ const Admin: React.FC = () => {
             <h2 className="text-2xl font-black text-gray-900">Profil Admin</h2>
             <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-8 space-y-5">
               {profile && (
-                <>
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-400 uppercase ml-2">Nama Lengkap</label>
-                    <input name="name" value={profile.name} onChange={handleProfileChange} className="w-full px-5 py-4 rounded-xl bg-gray-50 font-bold border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="Nama" />
+                    <input name="name" value={profile.name} onChange={handleProfileChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 font-bold border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="Nama" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-2">Peran / Role</label>
+                    <input name="role" value={profile.role} onChange={handleProfileChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 font-bold border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="Contoh: Digital Educator" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-2">URL Foto Profil</label>
+                    <input name="photoUrl" value={profile.photoUrl} onChange={handleProfileChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 text-xs border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="https://..." />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-2">Email</label>
+                    <input name="email" value={profile.email} onChange={handleProfileChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="Email" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-2">LinkedIn URL</label>
+                    <input name="linkedin" value={profile.linkedin} onChange={handleProfileChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 text-xs border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="LinkedIn" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-2">GitHub URL</label>
+                    <input name="github" value={profile.github} onChange={handleProfileChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 text-xs border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="GitHub" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-400 uppercase ml-2">Bio Singkat</label>
-                    <textarea name="bio" value={profile.bio} onChange={handleProfileChange} rows={4} className="w-full px-5 py-4 rounded-xl bg-gray-50 border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="Bio" />
+                    <textarea name="bio" value={profile.bio} onChange={handleProfileChange} rows={3} className="w-full px-5 py-3 rounded-xl bg-gray-50 border-2 border-transparent focus:border-yellow-400 outline-none transition-all text-sm" placeholder="Bio" />
                   </div>
                   <button onClick={handleSaveProfile} className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all">Simpan ke Cloud</button>
-                </>
+                </div>
               )}
             </div>
           </div>

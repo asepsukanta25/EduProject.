@@ -6,39 +6,23 @@ export const storageService = {
   getProjects: async (): Promise<Project[]> => {
     if (!supabase) return [];
     try {
-      // Ambil data dari tabel 'projects'
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*');
-      
-      if (error) {
-        console.error('Supabase Fetch Error:', error.message);
-        throw error;
-      }
+      const { data, error } = await supabase.from('projects').select('*');
+      if (error) throw error;
+      if (!data) return [];
 
-      if (!data || data.length === 0) {
-        console.warn('Database terhubung tapi tabel "projects" kosong atau RLS aktif.');
-        return [];
-      }
-
-      console.log('Data mentah dari Supabase:', data);
-
-      // Mapping data agar kompatibel dengan interface Project di aplikasi
       const mappedData = data.map((item: any) => ({
         id: item.id,
-        title: item.title || 'Tanpa Judul',
+        title: item.title || '',
         description: item.description || '',
         imageUrl: item.imageUrl || item.image_url || '',
         externalUrl: item.externalUrl || item.external_url || '',
         category: item.category || '',
-        // Gunakan 'order', jika tidak ada cari 'idx', jika tidak ada gunakan 0
         order: typeof item.order === 'number' ? item.order : (typeof item.idx === 'number' ? item.idx : 0)
       }));
 
-      // Urutkan berdasarkan property order
       return mappedData.sort((a, b) => (a.order || 0) - (b.order || 0));
     } catch (err) {
-      console.error('Gagal memuat data proyek:', err);
+      console.error('Fetch Projects Error:', err);
       return [];
     }
   },
@@ -48,41 +32,26 @@ export const storageService = {
     
     const isNew = !project.id || project.id === '';
     
-    // Siapkan payload yang fleksibel untuk database lama (idx) maupun baru (order)
+    // Kirim payload dalam format camelCase DAN snake_case agar kompatibel dengan tabel manapun
     const payload: any = {
       title: project.title,
       description: project.description,
       imageUrl: project.imageUrl,
+      image_url: project.imageUrl, // snake_case fallback
       externalUrl: project.externalUrl,
+      external_url: project.externalUrl, // snake_case fallback
       category: project.category,
-      order: project.order
+      order: project.order,
+      idx: project.order // fallback untuk kolom idx
     };
     
-    try {
-      if (!isNew) {
-        const { error } = await supabase.from('projects').update(payload).eq('id', project.id);
-        if (error) throw error;
-      } else {
-        // Hapus ID agar Supabase generate UUID otomatis
-        const { id, ...newData } = payload;
-        const { error } = await supabase.from('projects').insert([newData]);
-        if (error) throw error;
-      }
-    } catch (err: any) {
-      console.error('Save Error:', err);
-      
-      // Fallback jika database hanya punya kolom 'idx'
-      if (err.message?.includes('column "order" does not exist')) {
-        const { order, ...fallbackData } = payload;
-        const finalData = { ...fallbackData, idx: project.order };
-        if (isNew) {
-          await supabase.from('projects').insert([finalData]);
-        } else {
-          await supabase.from('projects').update(finalData).eq('id', project.id);
-        }
-      } else {
-        throw new Error(err.message || "Gagal menyimpan data");
-      }
+    if (!isNew) {
+      const { error } = await supabase.from('projects').update(payload).eq('id', project.id);
+      if (error) throw error;
+    } else {
+      const { id, ...newData } = payload;
+      const { error } = await supabase.from('projects').insert([newData]);
+      if (error) throw error;
     }
   },
 
@@ -97,8 +66,19 @@ export const storageService = {
     try {
       const { data, error } = await supabase.from('profiles').select('*').limit(1).maybeSingle();
       if (error) throw error;
-      return data;
+      if (!data) return null;
+      
+      return {
+        name: data.name || '',
+        role: data.role || '',
+        bio: data.bio || '',
+        photoUrl: data.photoUrl || data.photo_url || '',
+        email: data.email || '',
+        linkedin: data.linkedin || '',
+        github: data.github || ''
+      };
     } catch (err) {
+      console.error('Fetch Profile Error:', err);
       return null;
     }
   },
@@ -106,12 +86,25 @@ export const storageService = {
   saveProfile: async (profile: DeveloperProfile): Promise<void> => {
     if (!supabase) return;
     const { data: existing } = await supabase.from('profiles').select('id').limit(1).maybeSingle();
-    const { ...profileData } = profile as any;
+    
+    // Kirim payload ganda (camelCase & snake_case)
+    const profilePayload = {
+      name: profile.name,
+      role: profile.role,
+      bio: profile.bio,
+      photoUrl: profile.photoUrl,
+      photo_url: profile.photoUrl, // fallback
+      email: profile.email,
+      linkedin: profile.linkedin,
+      github: profile.github
+    };
 
     if (existing) {
-      await supabase.from('profiles').update(profileData).eq('id', existing.id);
+      const { error } = await supabase.from('profiles').update(profilePayload).eq('id', existing.id);
+      if (error) throw error;
     } else {
-      await supabase.from('profiles').insert([profileData]);
+      const { error } = await supabase.from('profiles').insert([profilePayload]);
+      if (error) throw error;
     }
   }
 };
