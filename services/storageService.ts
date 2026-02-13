@@ -10,17 +10,15 @@ export const storageService = {
       if (error) throw error;
       if (!data) return [];
 
-      const mappedData = data.map((item: any) => ({
+      return data.map((item: any) => ({
         id: item.id,
         title: item.title || '',
         description: item.description || '',
-        imageUrl: item.imageUrl || item.image_url || '',
-        externalUrl: item.externalUrl || item.external_url || '',
+        imageUrl: item.image_url || item.imageUrl || '',
+        externalUrl: item.external_url || item.externalUrl || '',
         category: item.category || '',
         order: typeof item.order === 'number' ? item.order : (typeof item.idx === 'number' ? item.idx : 0)
-      }));
-
-      return mappedData.sort((a, b) => (a.order || 0) - (b.order || 0));
+      })).sort((a, b) => (a.order || 0) - (b.order || 0));
     } catch (err) {
       console.error('Fetch Projects Error:', err);
       return [];
@@ -32,25 +30,23 @@ export const storageService = {
     
     const isNew = !project.id || project.id === '';
     
-    // Kirim payload dalam format camelCase DAN snake_case agar kompatibel dengan tabel manapun
+    // Kirim data dengan kedua format nama kolom untuk kompatibilitas maksimal
     const payload: any = {
       title: project.title,
       description: project.description,
+      image_url: project.imageUrl,
       imageUrl: project.imageUrl,
-      image_url: project.imageUrl, // snake_case fallback
+      external_url: project.externalUrl,
       externalUrl: project.externalUrl,
-      external_url: project.externalUrl, // snake_case fallback
       category: project.category,
-      order: project.order,
-      idx: project.order // fallback untuk kolom idx
+      order: project.order
     };
     
     if (!isNew) {
       const { error } = await supabase.from('projects').update(payload).eq('id', project.id);
       if (error) throw error;
     } else {
-      const { id, ...newData } = payload;
-      const { error } = await supabase.from('projects').insert([newData]);
+      const { error } = await supabase.from('projects').insert([payload]);
       if (error) throw error;
     }
   },
@@ -72,7 +68,7 @@ export const storageService = {
         name: data.name || '',
         role: data.role || '',
         bio: data.bio || '',
-        photoUrl: data.photoUrl || data.photo_url || '',
+        photoUrl: data.photo_url || data.photoUrl || '',
         email: data.email || '',
         linkedin: data.linkedin || '',
         github: data.github || ''
@@ -85,15 +81,15 @@ export const storageService = {
 
   saveProfile: async (profile: DeveloperProfile): Promise<void> => {
     if (!supabase) return;
+    
     const { data: existing } = await supabase.from('profiles').select('id').limit(1).maybeSingle();
     
-    // Kirim payload ganda (camelCase & snake_case)
-    const profilePayload = {
+    const profilePayload: any = {
       name: profile.name,
       role: profile.role,
       bio: profile.bio,
+      photo_url: profile.photoUrl,
       photoUrl: profile.photoUrl,
-      photo_url: profile.photoUrl, // fallback
       email: profile.email,
       linkedin: profile.linkedin,
       github: profile.github

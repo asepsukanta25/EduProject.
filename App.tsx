@@ -26,7 +26,10 @@ const App: React.FC = () => {
             </div>
             <div className="w-12 h-1 bg-yellow-400 mx-auto mb-8 rounded-full"></div>
             <p className="text-gray-400 text-sm font-medium">
-              &copy; {new Date().getFullYear()} EduProject.
+              &copy; {new Date().getFullYear()} EduProject. Katalog Proyek Edukasi
+            </p>
+            <p className="text-gray-600 text-sm font-bold mt-2 tracking-wide uppercase">
+              Asep Sukanta
             </p>
           </div>
         </footer>
