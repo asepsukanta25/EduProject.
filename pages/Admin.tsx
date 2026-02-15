@@ -154,7 +154,7 @@ const Admin: React.FC = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6 pb-20">
         {/* Header Section */}
         <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center space-x-4">
@@ -171,25 +171,24 @@ const Admin: React.FC = () => {
           </div>
           <div className="flex w-full md:w-auto gap-2">
             <button 
-              onClick={() => { setEditingProject({ id: '', title: '', description: '', imageUrl: '', externalUrl: '', category: '', order: (projects.length + 1) }); setShowProjectModal(true); }} 
+              onClick={() => { setEditingProject({ id: '', title: '', description: '', imageUrl: '', externalUrl: '', category: '', order: (projects.length + 1), actionType: 'external' }); setShowProjectModal(true); }} 
               className="flex-1 md:flex-none bg-yellow-400 text-black px-6 py-4 rounded-2xl font-black text-sm shadow-lg shadow-yellow-200 hover:-translate-y-1 transition-all"
             >
-              + TAMBAH
+              + TAMBAH KONTEN
             </button>
             <button onClick={() => setIsAuthenticated(false)} className="bg-red-50 text-red-600 px-6 py-4 rounded-2xl font-black text-sm hover:bg-red-100 transition-all uppercase tracking-tight">Keluar</button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main List Section */}
+          {/* Katalog Proyek */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden h-full">
               <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
                 <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Katalog Konten</h2>
                 <span className="text-[10px] font-black bg-black text-yellow-400 px-3 py-1 rounded-full uppercase">{projects.length} Item</span>
               </div>
               
-              {/* Desktop View Table */}
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left">
                   <thead className="bg-gray-50 text-gray-400 uppercase text-[10px] font-black">
@@ -207,10 +206,12 @@ const Admin: React.FC = () => {
                         </td>
                         <td className="px-8 py-6">
                           <div className="flex items-center space-x-4">
-                            <img src={project.imageUrl} className="w-12 h-12 rounded-xl object-cover shadow-sm border border-gray-100" alt="" />
+                            <img src={project.imageUrl} className="w-12 h-12 rounded-xl object-cover shadow-sm border border-gray-100 bg-gray-100" alt="" onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/150?text=Error")} />
                             <div>
                               <div className="font-bold text-gray-900">{project.title}</div>
-                              <div className="text-[10px] text-gray-400 font-bold truncate max-w-[150px]">{project.externalUrl}</div>
+                              <div className="text-[10px] font-black text-yellow-600 uppercase">
+                                {project.actionType === 'internal' ? '👁️ Detail Halaman' : '🔗 Link Langsung'}
+                              </div>
                             </div>
                           </div>
                         </td>
@@ -224,7 +225,7 @@ const Admin: React.FC = () => {
                 </table>
               </div>
 
-              {/* Mobile View List */}
+              {/* Mobile Card List */}
               <div className="md:hidden divide-y divide-gray-50">
                 {projects.map((project) => (
                   <div key={project.id} className="p-6 flex flex-col space-y-4">
@@ -233,26 +234,12 @@ const Admin: React.FC = () => {
                         <span className="bg-black text-yellow-400 text-[10px] font-black px-2 py-1 rounded">#{project.order}</span>
                         <div className="font-bold text-gray-900 text-sm">{project.title}</div>
                       </div>
-                      <span className="text-[10px] font-black bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded uppercase">{project.category || 'Global'}</span>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <img src={project.imageUrl} className="w-16 h-16 rounded-2xl object-cover border border-gray-100" alt="" />
+                      <img src={project.imageUrl} className="w-16 h-16 rounded-2xl object-cover border border-gray-100 bg-gray-100" alt="" />
                       <div className="flex-1 space-y-2">
-                        <button 
-                          onClick={() => { setEditingProject(project); setShowProjectModal(true); }}
-                          className="w-full bg-white border-2 border-yellow-400 text-black py-2.5 rounded-xl font-black text-xs uppercase transition-all flex items-center justify-center space-x-2 active:scale-95"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          <span>EDIT KONTEN</span>
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteProject(project.id)}
-                          className="w-full bg-red-50 text-red-600 py-2.5 rounded-xl font-black text-[10px] uppercase transition-all flex items-center justify-center space-x-2 active:scale-95"
-                        >
-                          HAPUS
-                        </button>
+                        <button onClick={() => { setEditingProject(project); setShowProjectModal(true); }} className="w-full bg-white border-2 border-yellow-400 text-black py-2.5 rounded-xl font-black text-xs uppercase shadow-sm transition-all flex items-center justify-center space-x-2">EDIT</button>
+                        <button onClick={() => handleDeleteProject(project.id)} className="w-full bg-red-50 text-red-600 py-2.5 rounded-xl font-black text-[10px] uppercase">HAPUS</button>
                       </div>
                     </div>
                   </div>
@@ -260,72 +247,103 @@ const Admin: React.FC = () => {
               </div>
 
               {projects.length === 0 && (
-                <div className="py-20 text-center text-gray-400 italic">Belum ada konten.</div>
+                <div className="py-20 text-center text-gray-400 italic font-bold">Belum ada konten proyek.</div>
               )}
             </div>
           </div>
 
-          {/* Sidebar Profile */}
-          <div className="space-y-6 overflow-y-auto max-h-[80vh] pb-10">
+          {/* Pengaturan Profil Lengkap */}
+          <div className="space-y-6">
             <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-8">
-              <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center space-x-2">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+              <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center space-x-3">
+                <span className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center text-sm shadow-sm">👤</span>
                 <span>IDENTITAS DIGITAL</span>
               </h2>
+              
               {profile && (
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Nama Tampilan</label>
-                    <input name="name" value={profile.name} onChange={handleProfileChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold text-sm border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Jabatan / Pekerjaan</label>
-                    <input name="role" value={profile.role} onChange={handleProfileChange} placeholder="Contoh: Guru SD Negeri..." className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold text-sm border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Email Resmi</label>
-                    <input name="email" value={profile.email} onChange={handleProfileChange} placeholder="user@email.com" className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold text-sm border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Bio Singkat</label>
-                    <textarea name="bio" value={profile.bio} onChange={handleProfileChange} rows={3} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-transparent focus:border-yellow-400 outline-none transition-all text-sm font-medium" />
-                  </div>
-                  
-                  <div className="pt-4 border-t border-gray-50 space-y-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Kustomisasi Sosial</h3>
-                      <div className="space-y-1">
-                        <label className="text-[8px] font-black text-gray-400 uppercase block">Label Bagian</label>
-                        <input name="socialLabel" value={profile.socialLabel} onChange={handleProfileChange} placeholder="Media Sosial" className="px-2 py-1 rounded bg-gray-100 border-none text-[10px] font-black w-24 text-center outline-none focus:ring-1 focus:ring-yellow-400" />
-                      </div>
+                <div className="space-y-6">
+                  {/* Foto Profil */}
+                  <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div className="w-20 h-20 bg-white rounded-xl overflow-hidden shadow-inner flex-shrink-0 border-2 border-white">
+                      {profile.photoUrl ? (
+                        <img src={profile.photoUrl} className="w-full h-full object-cover" alt="Preview" onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/150?text=Error")} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase text-center p-2">No Image</div>
+                      )}
                     </div>
+                    <div className="flex-1 space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">URL Foto Profil</label>
+                      <input name="photoUrl" value={profile.photoUrl} onChange={handleProfileChange} className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 text-xs focus:border-yellow-400 outline-none" placeholder="https://..." />
+                    </div>
+                  </div>
+
+                  {/* Data Dasar */}
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Nama Lengkap</label>
+                      <input name="name" value={profile.name} onChange={handleProfileChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Jabatan / Peran</label>
+                      <input name="role" value={profile.role} onChange={handleProfileChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Bio Singkat</label>
+                      <textarea name="bio" value={profile.bio} onChange={handleProfileChange} rows={3} className="w-full px-4 py-3 rounded-xl bg-gray-50 font-medium text-sm border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="Tuliskan kata pengantar Anda..." />
+                    </div>
+                  </div>
+
+                  {/* Kontak & Sosial */}
+                  <div className="space-y-4 pt-4 border-t border-gray-100">
+                    <h3 className="text-[10px] font-black text-yellow-600 uppercase tracking-widest">Informasi Kontak</h3>
                     
-                    {/* LinkedIn Config */}
-                    <div className="bg-blue-50/50 p-4 rounded-2xl space-y-3 border border-blue-100">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Email</label>
+                      <input name="email" value={profile.email} onChange={handleProfileChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Label Kontak Sosial (Stack)</label>
+                      <input name="socialLabel" value={profile.socialLabel} onChange={handleProfileChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold border-2 border-transparent focus:border-yellow-400 outline-none transition-all" placeholder="@username atau label lainnya" />
+                    </div>
+                  </div>
+
+                  {/* Tombol Media Sosial */}
+                  <div className="space-y-4 pt-4 border-t border-gray-100">
+                    <h3 className="text-[10px] font-black text-yellow-600 uppercase tracking-widest">Tombol Media Sosial</h3>
+                    
+                    {/* Tombol 1 (LinkedIn) */}
+                    <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black text-blue-600 uppercase ml-1">Nama Tombol LinkedIn</label>
-                        <input name="linkedinLabel" value={profile.linkedinLabel} onChange={handleProfileChange} placeholder="LinkedIn" className="w-full px-3 py-2 rounded-lg bg-white border border-blue-200 focus:border-blue-500 outline-none transition-all text-xs font-bold" />
+                        <label className="text-[9px] font-black text-gray-400 uppercase ml-1">Label Tombol 1</label>
+                        <input name="linkedinLabel" value={profile.linkedinLabel} onChange={handleProfileChange} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-xs font-bold border-2 border-transparent focus:border-yellow-400 outline-none" placeholder="Contoh: Instagram" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black text-blue-600 uppercase ml-1">Tautan URL LinkedIn</label>
-                        <input name="linkedin" value={profile.linkedin} onChange={handleProfileChange} placeholder="https://linkedin.com/..." className="w-full px-3 py-2 rounded-lg bg-white border border-blue-200 focus:border-blue-500 outline-none transition-all text-[10px] font-medium" />
+                        <label className="text-[9px] font-black text-gray-400 uppercase ml-1">URL Tombol 1</label>
+                        <input name="linkedin" value={profile.linkedin} onChange={handleProfileChange} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-[10px] border-2 border-transparent focus:border-yellow-400 outline-none" placeholder="https://..." />
                       </div>
                     </div>
 
-                    {/* GitHub Config */}
-                    <div className="bg-gray-50 p-4 rounded-2xl space-y-3 border border-gray-200">
+                    {/* Tombol 2 (GitHub/Lainnya) */}
+                    <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black text-gray-500 uppercase ml-1">Nama Tombol GitHub</label>
-                        <input name="githubLabel" value={profile.githubLabel} onChange={handleProfileChange} placeholder="GitHub" className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 focus:border-black outline-none transition-all text-xs font-bold" />
+                        <label className="text-[9px] font-black text-gray-400 uppercase ml-1">Label Tombol 2</label>
+                        <input name="githubLabel" value={profile.githubLabel} onChange={handleProfileChange} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-xs font-bold border-2 border-transparent focus:border-yellow-400 outline-none" placeholder="Contoh: WhatsApp" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black text-gray-500 uppercase ml-1">Tautan URL GitHub</label>
-                        <input name="github" value={profile.github} onChange={handleProfileChange} placeholder="https://github.com/..." className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 focus:border-black outline-none transition-all text-[10px] font-medium" />
+                        <label className="text-[9px] font-black text-gray-400 uppercase ml-1">URL Tombol 2</label>
+                        <input name="github" value={profile.github} onChange={handleProfileChange} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-[10px] border-2 border-transparent focus:border-yellow-400 outline-none" placeholder="https://..." />
                       </div>
                     </div>
                   </div>
 
-                  <button onClick={handleSaveProfile} className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all active:scale-95">SIMPAN PROFIL</button>
+                  <button 
+                    onClick={handleSaveProfile} 
+                    disabled={syncing}
+                    className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all disabled:opacity-50"
+                  >
+                    {syncing ? 'MENYIMPAN...' : 'SIMPAN PROFIL'}
+                  </button>
                 </div>
               )}
             </div>
@@ -333,53 +351,111 @@ const Admin: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal Edit / Tambah */}
+      {/* Project Edit/Add Modal */}
       {showProjectModal && editingProject && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]">
-            <div className="p-6 bg-yellow-400 flex justify-between items-center">
-              <h3 className="text-xl font-black text-black uppercase tracking-tight">{editingProject.id ? 'Edit Konten' : 'Tambah Konten'}</h3>
-              <button onClick={() => setShowProjectModal(false)} className="bg-black text-yellow-400 w-10 h-10 rounded-xl flex items-center justify-center font-black">✕</button>
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]">
+            <div className="p-6 bg-yellow-400 flex justify-between items-center flex-shrink-0 shadow-lg">
+              <h3 className="text-xl font-black text-black uppercase tracking-tight">{editingProject.id ? 'Edit Konten Proyek' : 'Tambah Konten Baru'}</h3>
+              <button onClick={() => setShowProjectModal(false)} className="bg-black text-yellow-400 w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg">✕</button>
             </div>
             
-            <form onSubmit={handleSaveProject} className="p-8 space-y-4 overflow-y-auto">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Judul Konten</label>
-                  <input required value={editingProject.title} onChange={(e) => setEditingProject({...editingProject, title: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 font-bold focus:border-yellow-400 outline-none transition-all" placeholder="Contoh: EduCBT Pro..." />
+            <form onSubmit={handleSaveProject} className="p-8 space-y-6 overflow-y-auto">
+              {/* Basic Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Judul Utama</label>
+                    <input required value={editingProject.title} onChange={(e) => setEditingProject({...editingProject, title: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 font-bold focus:border-yellow-400 outline-none transition-all" placeholder="Nama Proyek/Aplikasi" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Kategori</label>
+                    <input value={editingProject.category} onChange={(e) => setEditingProject({...editingProject, category: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 font-bold focus:border-yellow-400 outline-none transition-all" placeholder="Contoh: Media Pembelajaran" />
+                  </div>
                 </div>
-                
-                <div className="col-span-1">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Urutan</label>
-                  <input type="number" required value={editingProject.order} onChange={(e) => setEditingProject({...editingProject, order: parseInt(e.target.value) || 0})} className="w-full px-5 py-4 rounded-2xl border-2 bg-black text-yellow-400 font-black focus:border-yellow-300 outline-none transition-all text-center" />
+                <div className="space-y-4">
+                  <div className="w-full h-32 bg-gray-100 rounded-2xl overflow-hidden border-2 border-yellow-400/20 relative shadow-inner">
+                    {editingProject.imageUrl ? (
+                      <img src={editingProject.imageUrl} className="w-full h-full object-cover" alt="Preview" onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/300?text=Error")} />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 font-black p-4 text-center">PRATINJAU GAMBAR UTAMA</div>
+                    )}
+                  </div>
+                  <input required placeholder="URL Gambar Kartu (Preview)" value={editingProject.imageUrl} onChange={(e) => setEditingProject({...editingProject, imageUrl: e.target.value})} className="w-full px-5 py-3 rounded-xl border-2 bg-gray-50 text-xs font-medium focus:border-yellow-400 outline-none" />
+                </div>
+              </div>
+
+              {/* Action Choice */}
+              <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 shadow-sm">
+                <label className="text-[10px] font-black text-gray-400 uppercase block mb-4 text-center">Pilihan Aksi Saat Diklik Di Beranda</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <button 
+                    type="button" 
+                    onClick={() => setEditingProject({...editingProject, actionType: 'external'})}
+                    className={`p-4 rounded-2xl border-2 transition-all font-black text-sm flex flex-col items-center gap-2 ${editingProject.actionType !== 'internal' ? 'border-yellow-400 bg-white shadow-md' : 'border-transparent bg-gray-100 opacity-60'}`}
+                  >
+                    <span className="text-2xl">🔗</span> Link Eksternal
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setEditingProject({...editingProject, actionType: 'internal'})}
+                    className={`p-4 rounded-2xl border-2 transition-all font-black text-sm flex flex-col items-center gap-2 ${editingProject.actionType === 'internal' ? 'border-yellow-400 bg-white shadow-md' : 'border-transparent bg-gray-100 opacity-60'}`}
+                  >
+                    <span className="text-2xl">👁️</span> Halaman Detail
+                  </button>
+                </div>
+              </div>
+
+              {/* Dynamic Sections Based on Action */}
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Tautan Tujuan Utama (External URL)</label>
+                  <input required value={editingProject.externalUrl} onChange={(e) => setEditingProject({...editingProject, externalUrl: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 text-xs font-medium" placeholder="https://aplikasi-anda.com" />
                 </div>
 
-                <div className="col-span-1">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Label / Tag</label>
-                  <input value={editingProject.category} onChange={(e) => setEditingProject({...editingProject, category: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 font-black text-yellow-600 focus:border-yellow-400 outline-none transition-all" placeholder="Contoh: LYNK..." />
+                {editingProject.actionType === 'internal' && (
+                  <div className="space-y-4 pt-4 border-t border-gray-100">
+                    <div className="bg-yellow-50/30 p-6 rounded-3xl space-y-4 border border-yellow-100 shadow-inner">
+                      <h4 className="text-xs font-black text-yellow-700 uppercase tracking-widest flex items-center">
+                        <span className="mr-2">📝</span> Konten Halaman Detail Kustom
+                      </h4>
+                      
+                      <div>
+                        <label className="text-[10px] font-black text-gray-500 uppercase ml-1 block mb-1">Deskripsi Panjang (Detail Produk)</label>
+                        <textarea rows={5} value={editingProject.detailContent} onChange={(e) => setEditingProject({...editingProject, detailContent: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-white text-sm font-medium focus:border-yellow-400 outline-none" placeholder="Ceritakan fitur, cara penggunaan, dan tujuan aplikasi secara mendalam..." />
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-black text-gray-500 uppercase ml-1 block mb-1">Galeri Gambar Detail (Pisahkan URL dengan Koma)</label>
+                        <textarea rows={2} value={editingProject.detailGallery} onChange={(e) => setEditingProject({...editingProject, detailGallery: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-white text-[10px] font-mono" placeholder="https://img1.jpg, https://img2.jpg, https://img3.jpg" />
+                        <p className="text-[9px] text-gray-400 mt-1 italic font-bold">Grid foto akan menyesuaikan jumlah URL yang Anda masukkan.</p>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-black text-gray-500 uppercase ml-1 block mb-1">URL Video Presentasi (Embed)</label>
+                        <input value={editingProject.detailVideo} onChange={(e) => setEditingProject({...editingProject, detailVideo: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-white text-xs font-medium" placeholder="https://www.youtube.com/embed/KODE_VIDEO" />
+                        <p className="text-[9px] text-gray-400 mt-1 italic font-bold">*WAJIB gunakan URL versi 'embed' YouTube agar video tampil.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Ringkasan Singkat (Muncul di Kartu Beranda)</label>
+                  <textarea required rows={2} value={editingProject.description} onChange={(e) => setEditingProject({...editingProject, description: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 text-sm font-medium" placeholder="Teks singkat penarik perhatian di kartu proyek..." />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Nomor Urutan Tampil</label>
+                    <input type="number" required value={editingProject.order} onChange={(e) => setEditingProject({...editingProject, order: parseInt(e.target.value) || 0})} className="w-full px-5 py-4 rounded-2xl border-2 bg-black text-yellow-400 font-black text-center text-xl" />
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Tautan Aplikasi (Link)</label>
-                <input required value={editingProject.externalUrl} onChange={(e) => setEditingProject({...editingProject, externalUrl: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 focus:border-yellow-400 outline-none transition-all text-xs font-medium" placeholder="https://..." />
-              </div>
-
-              <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">URL Gambar Pratinjau</label>
-                <input required value={editingProject.imageUrl} onChange={(e) => setEditingProject({...editingProject, imageUrl: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 focus:border-yellow-400 outline-none transition-all text-xs font-medium" placeholder="https://..." />
-              </div>
-
-              <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Narasi Deskripsi</label>
-                <textarea required rows={2} value={editingProject.description} onChange={(e) => setEditingProject({...editingProject, description: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 focus:border-yellow-400 outline-none transition-all font-medium text-sm" placeholder="Jelaskan isi konten..." />
-              </div>
-
-              <div className="pt-4">
-                <button type="submit" disabled={syncing} className="w-full bg-black text-yellow-400 font-black py-5 rounded-2xl shadow-xl hover:bg-yellow-400 hover:text-black transition-all disabled:opacity-50">
-                  {syncing ? 'MENYIMPAN...' : 'SIMPAN KE CLOUD'}
-                </button>
-              </div>
+              <button type="submit" disabled={syncing} className="w-full bg-black text-yellow-400 font-black py-5 rounded-2xl shadow-xl hover:bg-yellow-400 hover:text-black transition-all flex-shrink-0 active:scale-95">
+                {syncing ? 'PROSES MENYIMPAN...' : 'SIMPAN KE DATABASE CLOUD'}
+              </button>
             </form>
           </div>
         </div>

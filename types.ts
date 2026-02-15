@@ -7,6 +7,11 @@ export interface Project {
   externalUrl: string;
   category: string;
   order: number;
+  // Properti Baru
+  actionType?: 'external' | 'internal';
+  detailContent?: string;
+  detailGallery?: string; // String URL dipisahkan koma
+  detailVideo?: string; // Embed URL
 }
 
 export interface DeveloperProfile {

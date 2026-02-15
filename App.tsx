@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
 import Admin from './pages/Admin';
+import ProjectDetail from './pages/ProjectDetail';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/project/:id" element={<ProjectDetail />} />
           </Routes>
         </main>
         <footer className="bg-white border-t border-gray-100 py-16">

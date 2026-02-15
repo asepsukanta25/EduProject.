@@ -17,11 +17,41 @@ export const storageService = {
         imageUrl: item.image_url || item.imageUrl || '',
         externalUrl: item.external_url || item.externalUrl || '',
         category: item.category || '',
-        order: typeof item.order === 'number' ? item.order : (typeof item.idx === 'number' ? item.idx : 0)
+        order: typeof item.order === 'number' ? item.order : 0,
+        actionType: item.action_type || 'external',
+        detailContent: item.detail_content || '',
+        detailGallery: item.detail_gallery || '',
+        detailVideo: item.detail_video || ''
       })).sort((a, b) => (a.order || 0) - (b.order || 0));
     } catch (err) {
       console.error('Fetch Projects Error:', err);
       return [];
+    }
+  },
+
+  getProjectById: async (id: string): Promise<Project | null> => {
+    if (!supabase) return null;
+    try {
+      const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
+      if (error) throw error;
+      if (!data) return null;
+
+      return {
+        id: data.id,
+        title: data.title || '',
+        description: data.description || '',
+        imageUrl: data.image_url || data.imageUrl || '',
+        externalUrl: data.external_url || data.externalUrl || '',
+        category: data.category || '',
+        order: data.order || 0,
+        actionType: data.action_type || 'external',
+        detailContent: data.detail_content || '',
+        detailGallery: data.detail_gallery || '',
+        detailVideo: data.detail_video || ''
+      };
+    } catch (err) {
+      console.error('Fetch Project Detail Error:', err);
+      return null;
     }
   },
 
@@ -30,15 +60,17 @@ export const storageService = {
     
     const isNew = !project.id || project.id === '';
     
-    const payload: any = {
+    const payload = {
       title: project.title,
       description: project.description,
       image_url: project.imageUrl,
-      imageUrl: project.imageUrl,
       external_url: project.externalUrl,
-      externalUrl: project.externalUrl,
       category: project.category,
-      order: project.order
+      order: project.order,
+      action_type: project.actionType || 'external',
+      detail_content: project.detailContent || '',
+      detail_gallery: project.detailGallery || '',
+      detail_video: project.detailVideo || ''
     };
     
     if (!isNew) {
@@ -86,21 +118,17 @@ export const storageService = {
     
     const { data: existing } = await supabase.from('profiles').select('id').limit(1).maybeSingle();
     
-    const profilePayload: any = {
+    const profilePayload = {
       name: profile.name,
       role: profile.role,
       bio: profile.bio,
       photo_url: profile.photoUrl,
-      photoUrl: profile.photoUrl,
       email: profile.email,
       linkedin: profile.linkedin,
       linkedin_label: profile.linkedinLabel,
-      linkedinLabel: profile.linkedinLabel,
       github: profile.github,
       github_label: profile.githubLabel,
-      githubLabel: profile.githubLabel,
-      social_label: profile.socialLabel,
-      socialLabel: profile.socialLabel
+      social_label: profile.socialLabel
     };
 
     if (existing) {
