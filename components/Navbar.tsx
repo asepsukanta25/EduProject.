@@ -33,7 +33,7 @@ const Navbar: React.FC = () => {
               to="/" 
               className={`h-full flex items-center px-1 text-[13px] sm:text-sm transition-all duration-300 ${isActive('/')}`}
             >
-              Perpustakaan
+              Beranda
             </Link>
             <Link 
               to="/about" 

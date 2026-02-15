@@ -266,7 +266,7 @@ const Admin: React.FC = () => {
           </div>
 
           {/* Sidebar Profile */}
-          <div className="space-y-6">
+          <div className="space-y-6 overflow-y-auto max-h-[80vh] pb-10">
             <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-8">
               <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center space-x-2">
                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
@@ -279,10 +279,53 @@ const Admin: React.FC = () => {
                     <input name="name" value={profile.name} onChange={handleProfileChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold text-sm border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
                   </div>
                   <div className="space-y-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Jabatan / Pekerjaan</label>
+                    <input name="role" value={profile.role} onChange={handleProfileChange} placeholder="Contoh: Guru SD Negeri..." className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold text-sm border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Email Resmi</label>
+                    <input name="email" value={profile.email} onChange={handleProfileChange} placeholder="user@email.com" className="w-full px-4 py-3 rounded-xl bg-gray-50 font-bold text-sm border-2 border-transparent focus:border-yellow-400 outline-none transition-all" />
+                  </div>
+                  <div className="space-y-1">
                     <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Bio Singkat</label>
                     <textarea name="bio" value={profile.bio} onChange={handleProfileChange} rows={3} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-transparent focus:border-yellow-400 outline-none transition-all text-sm font-medium" />
                   </div>
-                  <button onClick={handleSaveProfile} className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all">SIMPAN PROFIL</button>
+                  
+                  <div className="pt-4 border-t border-gray-50 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Kustomisasi Sosial</h3>
+                      <div className="space-y-1">
+                        <label className="text-[8px] font-black text-gray-400 uppercase block">Label Bagian</label>
+                        <input name="socialLabel" value={profile.socialLabel} onChange={handleProfileChange} placeholder="Media Sosial" className="px-2 py-1 rounded bg-gray-100 border-none text-[10px] font-black w-24 text-center outline-none focus:ring-1 focus:ring-yellow-400" />
+                      </div>
+                    </div>
+                    
+                    {/* LinkedIn Config */}
+                    <div className="bg-blue-50/50 p-4 rounded-2xl space-y-3 border border-blue-100">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-blue-600 uppercase ml-1">Nama Tombol LinkedIn</label>
+                        <input name="linkedinLabel" value={profile.linkedinLabel} onChange={handleProfileChange} placeholder="LinkedIn" className="w-full px-3 py-2 rounded-lg bg-white border border-blue-200 focus:border-blue-500 outline-none transition-all text-xs font-bold" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-blue-600 uppercase ml-1">Tautan URL LinkedIn</label>
+                        <input name="linkedin" value={profile.linkedin} onChange={handleProfileChange} placeholder="https://linkedin.com/..." className="w-full px-3 py-2 rounded-lg bg-white border border-blue-200 focus:border-blue-500 outline-none transition-all text-[10px] font-medium" />
+                      </div>
+                    </div>
+
+                    {/* GitHub Config */}
+                    <div className="bg-gray-50 p-4 rounded-2xl space-y-3 border border-gray-200">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-500 uppercase ml-1">Nama Tombol GitHub</label>
+                        <input name="githubLabel" value={profile.githubLabel} onChange={handleProfileChange} placeholder="GitHub" className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 focus:border-black outline-none transition-all text-xs font-bold" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-500 uppercase ml-1">Tautan URL GitHub</label>
+                        <input name="github" value={profile.github} onChange={handleProfileChange} placeholder="https://github.com/..." className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 focus:border-black outline-none transition-all text-[10px] font-medium" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button onClick={handleSaveProfile} className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all active:scale-95">SIMPAN PROFIL</button>
                 </div>
               )}
             </div>

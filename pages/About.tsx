@@ -63,7 +63,7 @@ const About: React.FC = () => {
             </div>
             
             <p className="text-gray-600 text-lg leading-relaxed mb-8 italic">
-              "{profile.bio || 'Belum ada bio.'}"
+              "{profile.bio || 'Selamat datang di portofolio saya.'}"
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -77,27 +77,31 @@ const About: React.FC = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                 </svg>
-                <span className="text-sm font-medium">Media Sosial</span>
+                <span className="text-sm font-medium">{profile.socialLabel || 'Media Sosial'}</span>
               </div>
             </div>
 
-            <div className="flex space-x-4">
-              <a 
-                href={profile.linkedin || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-yellow-400 text-black px-8 py-3 rounded-xl font-black hover:bg-black hover:text-yellow-400 transition-all shadow-lg shadow-yellow-100"
-              >
-                LinkedIn
-              </a>
-              <a 
-                href={profile.github || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-white border-2 border-gray-200 text-gray-700 px-8 py-3 rounded-xl font-bold hover:bg-gray-50 transition-colors"
-              >
-                GitHub
-              </a>
+            <div className="flex flex-wrap gap-4">
+              {profile.linkedin && (
+                <a 
+                  href={profile.linkedin} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-yellow-400 text-black px-8 py-3 rounded-xl font-black hover:bg-black hover:text-yellow-400 transition-all shadow-lg shadow-yellow-100 active:scale-95"
+                >
+                  {profile.linkedinLabel || 'LinkedIn'}
+                </a>
+              )}
+              {profile.github && (
+                <a 
+                  href={profile.github} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-white border-2 border-gray-200 text-gray-700 px-8 py-3 rounded-xl font-bold hover:bg-gray-50 transition-colors active:scale-95"
+                >
+                  {profile.githubLabel || 'GitHub'}
+                </a>
+              )}
             </div>
           </div>
         </div>

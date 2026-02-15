@@ -16,7 +16,10 @@ export interface DeveloperProfile {
   photoUrl: string;
   email: string;
   linkedin: string;
+  linkedinLabel?: string;
   github: string;
+  githubLabel?: string;
+  socialLabel?: string;
 }
 
 export enum StorageKey {

@@ -30,7 +30,6 @@ export const storageService = {
     
     const isNew = !project.id || project.id === '';
     
-    // Kirim data dengan kedua format nama kolom untuk kompatibilitas maksimal
     const payload: any = {
       title: project.title,
       description: project.description,
@@ -71,7 +70,10 @@ export const storageService = {
         photoUrl: data.photo_url || data.photoUrl || '',
         email: data.email || '',
         linkedin: data.linkedin || '',
-        github: data.github || ''
+        linkedinLabel: data.linkedin_label || data.linkedinLabel || '',
+        github: data.github || '',
+        githubLabel: data.github_label || data.githubLabel || '',
+        socialLabel: data.social_label || data.socialLabel || ''
       };
     } catch (err) {
       console.error('Fetch Profile Error:', err);
@@ -92,7 +94,13 @@ export const storageService = {
       photoUrl: profile.photoUrl,
       email: profile.email,
       linkedin: profile.linkedin,
-      github: profile.github
+      linkedin_label: profile.linkedinLabel,
+      linkedinLabel: profile.linkedinLabel,
+      github: profile.github,
+      github_label: profile.githubLabel,
+      githubLabel: profile.githubLabel,
+      social_label: profile.socialLabel,
+      socialLabel: profile.socialLabel
     };
 
     if (existing) {
