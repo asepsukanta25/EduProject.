@@ -66,12 +66,21 @@ const Home: React.FC = () => {
     <div className="min-h-screen pb-20 bg-white">
       <section className="theme-gradient py-16 md:py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
-          <div className="mb-8 animate-bounce-slow">
-            <img 
-              src={logoUrl || defaultHeroLogo} 
-              className="h-24 md:h-32 mx-auto object-contain drop-shadow-2xl" 
-              alt="Logo Aplikasi" 
-            />
+          <div className="mb-8 animate-bounce-slow flex flex-col items-center">
+            {logoUrl ? (
+              <img 
+                src={logoUrl} 
+                className="h-24 md:h-32 mx-auto object-contain drop-shadow-2xl" 
+                alt="Logo Aplikasi" 
+              />
+            ) : (
+              <div className="flex items-center justify-center">
+                <div className="w-20 h-20 md:w-28 md:h-28 bg-black rounded-[2rem] flex items-center justify-center text-yellow-400 text-5xl md:text-6xl font-black shadow-2xl transform -rotate-6">
+                  E
+                </div>
+                <span className="ml-4 text-4xl md:text-6xl font-black text-black tracking-tighter">Project</span>
+              </div>
+            )}
           </div>
           <p className="text-xl font-black uppercase mb-10 tracking-widest text-black/80">Katalog Proyek Edukasi</p>
           <div className="relative max-w-lg mx-auto">

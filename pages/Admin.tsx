@@ -117,10 +117,12 @@ const Admin: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-10 border border-gray-100">
           <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-yellow-400 rounded-3xl flex items-center justify-center text-black mx-auto mb-6 shadow-xl rotate-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
+            <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center text-yellow-400 mx-auto mb-6 shadow-xl rotate-3">
+              {profile?.appLogoUrl ? (
+                <img src={profile.appLogoUrl} alt="Logo" className="w-12 h-12 object-contain" />
+              ) : (
+                <span className="text-4xl font-black">E</span>
+              )}
             </div>
             <h1 className="text-3xl font-black text-gray-900">Admin Login</h1>
             <p className="text-gray-500 mt-2">Mode Sinkronisasi Aman</p>

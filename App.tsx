@@ -1,26 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
 import Admin from './pages/Admin';
 import ProjectDetail from './pages/ProjectDetail';
-import { storageService } from './services/storageService';
 
 const App: React.FC = () => {
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchLogo = async () => {
-      const profile = await storageService.getProfile();
-      if (profile?.appLogoUrl) {
-        setLogoUrl(profile.appLogoUrl);
-      }
-    };
-    fetchLogo();
-  }, []);
-
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
@@ -35,19 +22,16 @@ const App: React.FC = () => {
         </main>
         <footer className="bg-white border-t border-gray-100 py-16">
           <div className="max-w-7xl mx-auto px-4 text-center">
-            <div className="flex items-center justify-center space-x-2 mb-6">
-              <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-yellow-400 text-xs font-black shadow-lg overflow-hidden">
-                {logoUrl ? (
-                  <img src={logoUrl} alt="Logo" className="w-full h-full object-contain p-1" />
-                ) : (
-                  'E'
-                )}
+            {/* Footer Logo - Fixed Design */}
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-yellow-400 text-xs font-black shadow-lg">
+                E
               </div>
-              <span className="text-xl font-black text-gray-900 tracking-tighter">EduProject</span>
+              <span className="ml-2 text-xl font-black text-gray-900 tracking-tighter">Project</span>
             </div>
             <div className="w-12 h-1 bg-yellow-400 mx-auto mb-8 rounded-full"></div>
             <p className="text-gray-400 text-sm font-medium">
-              &copy; {new Date().getFullYear()} EduProject. Katalog Proyek Edukasi
+              &copy; {new Date().getFullYear()} E Project. Katalog Proyek Edukasi
             </p>
             <p className="text-gray-600 text-sm font-bold mt-2 tracking-wide uppercase">
               Asep Sukanta
