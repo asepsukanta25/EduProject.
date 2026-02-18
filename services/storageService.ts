@@ -100,6 +100,7 @@ export const storageService = {
         role: data.role || '',
         bio: data.bio || '',
         photoUrl: data.photo_url || data.photoUrl || '',
+        appLogoUrl: data.app_logo_url || data.appLogoUrl || '', // Tambahan logo
         email: data.email || '',
         linkedin: data.linkedin || '',
         linkedinLabel: data.linkedin_label || data.linkedinLabel || '',
@@ -123,6 +124,7 @@ export const storageService = {
       role: profile.role,
       bio: profile.bio,
       photo_url: profile.photoUrl,
+      app_logo_url: profile.appLogoUrl, // Simpan logo
       email: profile.email,
       linkedin: profile.linkedin,
       linkedin_label: profile.linkedinLabel,

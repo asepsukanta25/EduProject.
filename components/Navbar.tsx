@@ -1,9 +1,21 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { storageService } from '../services/storageService';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      const profile = await storageService.getProfile();
+      if (profile?.appLogoUrl) {
+        setLogoUrl(profile.appLogoUrl);
+      }
+    };
+    fetchLogo();
+  }, []);
 
   const isActive = (path: string) => {
     return location.pathname === path 
@@ -18,8 +30,12 @@ const Navbar: React.FC = () => {
           {/* Logo Section */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center text-yellow-400 font-black shadow-md transform -rotate-3 hover:rotate-0 transition-transform">
-                E
+              <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center text-yellow-400 font-black shadow-md transform -rotate-3 hover:rotate-0 transition-transform overflow-hidden">
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Logo" className="w-full h-full object-contain p-1.5" />
+                ) : (
+                  'E'
+                )}
               </div>
               <span className="text-xl font-black text-gray-900 tracking-tighter hidden sm:block">
                 EduProject

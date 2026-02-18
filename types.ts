@@ -19,6 +19,7 @@ export interface DeveloperProfile {
   role: string;
   bio: string;
   photoUrl: string;
+  appLogoUrl?: string; // Properti baru untuk logo aplikasi
   email: string;
   linkedin: string;
   linkedinLabel?: string;

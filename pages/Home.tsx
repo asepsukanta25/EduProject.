@@ -9,8 +9,17 @@ const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchLogo = async () => {
+      const profile = await storageService.getProfile();
+      if (profile?.appLogoUrl) {
+        setLogoUrl(profile.appLogoUrl);
+      }
+    };
+    fetchLogo();
+
     const fetchProjects = async () => {
       if (!supabase) {
         setLoading(false);
@@ -36,6 +45,8 @@ const Home: React.FC = () => {
            cat.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+  const defaultHeroLogo = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiaW5WrQkMJZtb_G-mIWuX6s77cyjLrVAyLclBI-4_ELGMtduNtr5wXjnh5v5-Sv301QHZwtyclFhtVc0PZM4wpirILYbfWJWg1f1kwzmMjLWwdSwXjU-v_F6VSBIqIhB9EDHumNy1E1QPhQJ5x3QA1oc7QUYYEpXyTGzXXkeJrE6lTUhyphenhyphenFIqtYDiPRZnY/s16000/Screenshot_28.png";
+
   if (!supabase) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-yellow-50 p-6">
@@ -56,7 +67,11 @@ const Home: React.FC = () => {
       <section className="theme-gradient py-16 md:py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
           <div className="mb-8 animate-bounce-slow">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiaW5WrQkMJZtb_G-mIWuX6s77cyjLrVAyLclBI-4_ELGMtduNtr5wXjnh5v5-Sv301QHZwtyclFhtVc0PZM4wpirILYbfWJWg1f1kwzmMjLWwdSwXjU-v_F6VSBIqIhB9EDHumNy1E1QPhQJ5x3QA1oc7QUYYEpXyTGzXXkeJrE6lTUhyphenhyphenFIqtYDiPRZnY/s16000/Screenshot_28.png" className="h-24 md:h-32 mx-auto" alt="Logo" />
+            <img 
+              src={logoUrl || defaultHeroLogo} 
+              className="h-24 md:h-32 mx-auto object-contain drop-shadow-2xl" 
+              alt="Logo Aplikasi" 
+            />
           </div>
           <p className="text-xl font-black uppercase mb-10 tracking-widest text-black/80">Katalog Proyek Edukasi</p>
           <div className="relative max-w-lg mx-auto">

@@ -158,7 +158,11 @@ const Admin: React.FC = () => {
         {/* Header Section */}
         <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-yellow-400 font-black text-xl shadow-lg">E</div>
+            <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-yellow-400 font-black text-xl shadow-lg">
+              {profile?.appLogoUrl ? (
+                <img src={profile.appLogoUrl} alt="Logo" className="w-8 h-8 object-contain" />
+              ) : 'E'}
+            </div>
             <div>
               <h1 className="text-xl font-black text-gray-900">Dashboard Konten</h1>
               <div className="flex items-center space-x-2">
@@ -252,16 +256,37 @@ const Admin: React.FC = () => {
             </div>
           </div>
 
-          {/* Pengaturan Profil Lengkap */}
+          {/* Pengaturan Profil & Branding */}
           <div className="space-y-6">
             <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-8">
               <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center space-x-3">
                 <span className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center text-sm shadow-sm">👤</span>
-                <span>IDENTITAS DIGITAL</span>
+                <span>IDENTITAS & BRANDING</span>
               </h2>
               
               {profile && (
                 <div className="space-y-6">
+                  {/* Logo Aplikasi Section */}
+                  <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-100 space-y-3">
+                    <label className="text-[10px] font-black text-yellow-700 uppercase ml-1">URL Logo Aplikasi (Header/Footer)</label>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-white rounded-xl border border-yellow-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        {profile.appLogoUrl ? (
+                          <img src={profile.appLogoUrl} className="w-full h-full object-contain p-1" alt="Logo Preview" />
+                        ) : (
+                          <span className="font-black text-lg">E</span>
+                        )}
+                      </div>
+                      <input 
+                        name="appLogoUrl" 
+                        value={profile.appLogoUrl || ''} 
+                        onChange={handleProfileChange} 
+                        className="flex-1 px-3 py-2 rounded-lg bg-white border border-gray-200 text-xs focus:border-yellow-400 outline-none" 
+                        placeholder="https://link-ke-logo.png" 
+                      />
+                    </div>
+                  </div>
+
                   {/* Foto Profil */}
                   <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                     <div className="w-20 h-20 bg-white rounded-xl overflow-hidden shadow-inner flex-shrink-0 border-2 border-white">
