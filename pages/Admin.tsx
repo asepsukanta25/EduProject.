@@ -104,12 +104,40 @@ const Admin: React.FC = () => {
     setSyncing(true);
     try {
       await storageService.saveProfile(profile);
-      showNotification('Profil diperbarui!');
+      showNotification('Profil & Layout diperbarui!');
     } catch (err: any) {
-      showNotification('Gagal simpan profil: ' + err.message, true);
+      showNotification('Gagal simpan: ' + err.message, true);
     } finally {
       setSyncing(false);
     }
+  };
+
+  const handleLayoutChange = (settings: Partial<any>) => {
+    if (!profile) return;
+    const currentSettings = profile.layoutSettings || {
+      columnsDesktop: 3,
+      columnsTablet: 2,
+      columnsMobile: 1,
+      gap: 8,
+      isAutoFit: false,
+      preset: 'standard'
+    };
+    setProfile({
+      ...profile,
+      layoutSettings: { ...currentSettings, ...settings }
+    });
+  };
+
+  const applyPreset = (preset: 'standard' | 'adaptive' | 'masonry' | 'custom') => {
+    let newSettings: any = { preset };
+    if (preset === 'standard') {
+      newSettings = { ...newSettings, columnsDesktop: 3, columnsTablet: 2, columnsMobile: 1, isAutoFit: false, gap: 8 };
+    } else if (preset === 'adaptive') {
+      newSettings = { ...newSettings, columnsDesktop: 3, columnsTablet: 2, columnsMobile: 1, isAutoFit: true, gap: 8 };
+    } else if (preset === 'masonry') {
+      newSettings = { ...newSettings, columnsDesktop: 3, columnsTablet: 2, columnsMobile: 1, isAutoFit: false, gap: 6 };
+    }
+    handleLayoutChange(newSettings);
   };
 
   if (!isAuthenticated) {
@@ -370,6 +398,116 @@ const Admin: React.FC = () => {
                     className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all disabled:opacity-50"
                   >
                     {syncing ? 'MENYIMPAN...' : 'SIMPAN PROFIL'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Layout Settings Section */}
+            <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-8">
+              <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center space-x-3">
+                <span className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center text-sm shadow-sm">📐</span>
+                <span>TAMPILAN BERANDA</span>
+              </h2>
+
+              {profile && (
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Pilih Preset Layout</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'standard', label: 'Standard (3 Kolom)', icon: '▦' },
+                        { id: 'adaptive', label: 'Adaptif (Isi Ruang)', icon: '▤' },
+                        { id: 'masonry', label: 'Masonry (Estetik)', icon: '▧' },
+                        { id: 'custom', label: 'Kustom Sendiri', icon: '⚙️' }
+                      ].map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => applyPreset(p.id as any)}
+                          className={`p-3 rounded-xl border-2 transition-all text-left flex flex-col gap-1 ${
+                            (profile.layoutSettings?.preset || 'standard') === p.id 
+                            ? 'border-yellow-400 bg-yellow-50' 
+                            : 'border-gray-100 hover:border-yellow-200'
+                          }`}
+                        >
+                          <span className="text-xl">{p.icon}</span>
+                          <span className="text-[10px] font-black uppercase">{p.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {(profile.layoutSettings?.preset === 'custom' || profile.layoutSettings?.preset === 'standard' || profile.layoutSettings?.preset === 'masonry') && (
+                    <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                      <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Konfigurasi Kolom</h3>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-gray-400 uppercase">Desktop</label>
+                          <input 
+                            type="number" 
+                            min="1" max="6"
+                            value={profile.layoutSettings?.columnsDesktop || 3}
+                            onChange={(e) => handleLayoutChange({ columnsDesktop: parseInt(e.target.value) })}
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-center"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-gray-400 uppercase">Tablet</label>
+                          <input 
+                            type="number" 
+                            min="1" max="4"
+                            value={profile.layoutSettings?.columnsTablet || 2}
+                            onChange={(e) => handleLayoutChange({ columnsTablet: parseInt(e.target.value) })}
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-center"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-gray-400 uppercase">Mobile</label>
+                          <input 
+                            type="number" 
+                            min="1" max="2"
+                            value={profile.layoutSettings?.columnsMobile || 1}
+                            onChange={(e) => handleLayoutChange({ columnsMobile: parseInt(e.target.value) })}
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-center"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] font-black text-gray-400 uppercase">Jarak Antar Item (Gap)</label>
+                      <span className="text-xs font-black text-yellow-600">{profile.layoutSettings?.gap || 8}px</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" max="20" 
+                      value={profile.layoutSettings?.gap || 8}
+                      onChange={(e) => handleLayoutChange({ gap: parseInt(e.target.value) })}
+                      className="w-full accent-yellow-400"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-2xl border border-yellow-100">
+                    <div className="flex-1">
+                      <h4 className="text-[10px] font-black text-yellow-800 uppercase">Auto-Fit (Tanpa Ruang Kosong)</h4>
+                      <p className="text-[9px] text-yellow-600 font-medium">Item akan melebar untuk mengisi baris yang tidak penuh.</p>
+                    </div>
+                    <button 
+                      onClick={() => handleLayoutChange({ isAutoFit: !profile.layoutSettings?.isAutoFit })}
+                      className={`w-12 h-6 rounded-full transition-all relative ${profile.layoutSettings?.isAutoFit ? 'bg-black' : 'bg-gray-300'}`}
+                    >
+                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-yellow-400 transition-all ${profile.layoutSettings?.isAutoFit ? 'right-1' : 'left-1'}`}></div>
+                    </button>
+                  </div>
+
+                  <button 
+                    onClick={handleSaveProfile} 
+                    disabled={syncing}
+                    className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all disabled:opacity-50"
+                  >
+                    {syncing ? 'MENYIMPAN...' : 'SIMPAN LAYOUT'}
                   </button>
                 </div>
               )}

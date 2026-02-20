@@ -14,6 +14,15 @@ export interface Project {
   detailVideo?: string; // Embed URL
 }
 
+export interface LayoutSettings {
+  columnsDesktop: number;
+  columnsTablet: number;
+  columnsMobile: number;
+  gap: number;
+  isAutoFit: boolean;
+  preset: 'standard' | 'adaptive' | 'masonry' | 'custom';
+}
+
 export interface DeveloperProfile {
   name: string;
   role: string;
@@ -26,6 +35,7 @@ export interface DeveloperProfile {
   github: string;
   githubLabel?: string;
   socialLabel?: string;
+  layoutSettings?: LayoutSettings;
 }
 
 export enum StorageKey {

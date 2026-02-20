@@ -106,7 +106,8 @@ export const storageService = {
         linkedinLabel: data.linkedin_label || data.linkedinLabel || '',
         github: data.github || '',
         githubLabel: data.github_label || data.githubLabel || '',
-        socialLabel: data.social_label || data.socialLabel || ''
+        socialLabel: data.social_label || data.socialLabel || '',
+        layoutSettings: data.layout_settings ? (typeof data.layout_settings === 'string' ? JSON.parse(data.layout_settings) : data.layout_settings) : undefined
       };
     } catch (err) {
       console.error('Fetch Profile Error:', err);
@@ -130,7 +131,8 @@ export const storageService = {
       linkedin_label: profile.linkedinLabel,
       github: profile.github,
       github_label: profile.githubLabel,
-      social_label: profile.socialLabel
+      social_label: profile.socialLabel,
+      layout_settings: profile.layoutSettings ? JSON.stringify(profile.layoutSettings) : null
     };
 
     if (existing) {

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import ProjectCard from '../components/ProjectCard';
-import { Project } from '../types';
+import { Project, LayoutSettings } from '../types';
 import { storageService } from '../services/storageService';
 import { supabase } from '../services/supabaseClient';
 
@@ -10,15 +10,19 @@ const Home: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [layoutSettings, setLayoutSettings] = useState<LayoutSettings | null>(null);
 
   useEffect(() => {
-    const fetchLogo = async () => {
+    const fetchProfileData = async () => {
       const profile = await storageService.getProfile();
       if (profile?.appLogoUrl) {
         setLogoUrl(profile.appLogoUrl);
       }
+      if (profile?.layoutSettings) {
+        setLayoutSettings(profile.layoutSettings);
+      }
     };
-    fetchLogo();
+    fetchProfileData();
 
     const fetchProjects = async () => {
       if (!supabase) {
@@ -45,7 +49,41 @@ const Home: React.FC = () => {
            cat.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  const defaultHeroLogo = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiaW5WrQkMJZtb_G-mIWuX6s77cyjLrVAyLclBI-4_ELGMtduNtr5wXjnh5v5-Sv301QHZwtyclFhtVc0PZM4wpirILYbfWJWg1f1kwzmMjLWwdSwXjU-v_F6VSBIqIhB9EDHumNy1E1QPhQJ5x3QA1oc7QUYYEpXyTGzXXkeJrE6lTUhyphenhyphenFIqtYDiPRZnY/s16000/Screenshot_28.png";
+  const getLayoutStyles = () => {
+    if (!layoutSettings) return { gridClass: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3", gap: "gap-8", isMasonry: false };
+
+    const { preset, columnsDesktop, columnsTablet, columnsMobile, gap, isAutoFit } = layoutSettings;
+    
+    const gapClass = `gap-[${gap * 4}px]`; // Tailwind gap is usually 4px per unit, but I'll use arbitrary values for precision
+    const gapStyle = { gap: `${gap * 4}px` };
+
+    if (preset === 'masonry') {
+      return { 
+        containerClass: `columns-${columnsMobile} md:columns-${columnsTablet} lg:columns-${columnsDesktop}`, 
+        gapStyle,
+        isMasonry: true 
+      };
+    }
+
+    if (isAutoFit) {
+      return { 
+        gridStyle: { 
+          display: 'grid', 
+          gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, 300px), 1fr))`,
+          ...gapStyle 
+        }, 
+        isMasonry: false 
+      };
+    }
+
+    return { 
+      gridClass: `grid-cols-${columnsMobile} md:grid-cols-${columnsTablet} lg:grid-cols-${columnsDesktop}`, 
+      gridStyle: gapStyle,
+      isMasonry: false 
+    };
+  };
+
+  const layout = getLayoutStyles();
 
   if (!supabase) {
     return (
@@ -110,8 +148,15 @@ const Home: React.FC = () => {
              <p className="font-black text-gray-400 uppercase tracking-widest">Sinkronisasi Cloud...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map(p => <ProjectCard key={p.id} project={p} />)}
+          <div 
+            className={`${layout.isMasonry ? layout.containerClass : `grid ${layout.gridClass || ''}`} transition-all duration-500`}
+            style={layout.gridStyle}
+          >
+            {filteredProjects.map(p => (
+              <div key={p.id} className={layout.isMasonry ? "mb-6 break-inside-avoid" : ""}>
+                <ProjectCard project={p} />
+              </div>
+            ))}
             {filteredProjects.length === 0 && (
               <div className="col-span-full py-32 bg-gray-50 rounded-[3rem] text-center border-4 border-dashed border-gray-100">
                 <div className="text-6xl mb-6">🔍</div>
