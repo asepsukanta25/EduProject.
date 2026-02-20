@@ -107,7 +107,8 @@ export const storageService = {
         github: data.github || '',
         githubLabel: data.github_label || data.githubLabel || '',
         socialLabel: data.social_label || data.socialLabel || '',
-        layoutSettings: data.layout_settings ? (typeof data.layout_settings === 'string' ? JSON.parse(data.layout_settings) : data.layout_settings) : undefined
+        layoutSettings: data.layout_settings ? (typeof data.layout_settings === 'string' ? JSON.parse(data.layout_settings) : data.layout_settings) : undefined,
+        themeSettings: data.theme_settings ? (typeof data.theme_settings === 'string' ? JSON.parse(data.theme_settings) : data.theme_settings) : undefined
       };
     } catch (err) {
       console.error('Fetch Profile Error:', err);
@@ -132,7 +133,8 @@ export const storageService = {
       github: profile.github,
       github_label: profile.githubLabel,
       social_label: profile.socialLabel,
-      layout_settings: profile.layoutSettings ? JSON.stringify(profile.layoutSettings) : null
+      layout_settings: profile.layoutSettings ? JSON.stringify(profile.layoutSettings) : null,
+      theme_settings: profile.themeSettings ? JSON.stringify(profile.themeSettings) : null
     };
 
     if (existing) {

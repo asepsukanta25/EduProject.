@@ -128,6 +128,39 @@ const Admin: React.FC = () => {
     });
   };
 
+  const handleThemeChange = (settings: Partial<any>) => {
+    if (!profile) return;
+    const currentSettings = profile.themeSettings || {
+      primaryColor: '#facc15',
+      secondaryColor: '#eab308',
+      accentColor: '#000000',
+      textColor: '#111827',
+      backgroundColor: '#ffffff',
+      cardColor: '#ffffff',
+      borderRadius: '1.5rem'
+    };
+    setProfile({
+      ...profile,
+      themeSettings: { ...currentSettings, ...settings }
+    });
+  };
+
+  const applyThemePreset = (theme: 'yellow' | 'blue' | 'emerald' | 'rose' | 'dark') => {
+    let newSettings: any = {};
+    if (theme === 'yellow') {
+      newSettings = { primaryColor: '#facc15', secondaryColor: '#eab308', accentColor: '#000000', textColor: '#111827', backgroundColor: '#ffffff', cardColor: '#ffffff', borderRadius: '1.5rem' };
+    } else if (theme === 'blue') {
+      newSettings = { primaryColor: '#3b82f6', secondaryColor: '#2563eb', accentColor: '#1e3a8a', textColor: '#111827', backgroundColor: '#f0f9ff', cardColor: '#ffffff', borderRadius: '1rem' };
+    } else if (theme === 'emerald') {
+      newSettings = { primaryColor: '#10b981', secondaryColor: '#059669', accentColor: '#064e3b', textColor: '#111827', backgroundColor: '#ecfdf5', cardColor: '#ffffff', borderRadius: '2rem' };
+    } else if (theme === 'rose') {
+      newSettings = { primaryColor: '#f43f5e', secondaryColor: '#e11d48', accentColor: '#881337', textColor: '#111827', backgroundColor: '#fff1f2', cardColor: '#ffffff', borderRadius: '1.25rem' };
+    } else if (theme === 'dark') {
+      newSettings = { primaryColor: '#facc15', secondaryColor: '#eab308', accentColor: '#ffffff', textColor: '#f3f4f6', backgroundColor: '#111827', cardColor: '#1f2937', borderRadius: '1rem' };
+    }
+    handleThemeChange(newSettings);
+  };
+
   const applyPreset = (preset: 'standard' | 'adaptive' | 'masonry' | 'custom') => {
     let newSettings: any = { preset };
     if (preset === 'standard') {
@@ -508,6 +541,117 @@ const Admin: React.FC = () => {
                     className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all disabled:opacity-50"
                   >
                     {syncing ? 'MENYIMPAN...' : 'SIMPAN LAYOUT'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Theme Settings Section */}
+            <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-8">
+              <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center space-x-3">
+                <span className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center text-sm shadow-sm">🎨</span>
+                <span>TEMA WARNA</span>
+              </h2>
+
+              {profile && (
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Pilih Preset Warna</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'yellow', label: 'Yellow', color: '#facc15' },
+                        { id: 'blue', label: 'Blue', color: '#3b82f6' },
+                        { id: 'emerald', label: 'Emerald', color: '#10b981' },
+                        { id: 'rose', label: 'Rose', color: '#f43f5e' },
+                        { id: 'dark', label: 'Dark', color: '#111827' }
+                      ].map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => applyThemePreset(t.id as any)}
+                          className="p-2 rounded-xl border-2 border-gray-100 hover:border-yellow-400 transition-all flex flex-col items-center gap-1"
+                        >
+                          <div className="w-8 h-8 rounded-full shadow-inner" style={{ backgroundColor: t.color }}></div>
+                          <span className="text-[8px] font-black uppercase">{t.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Kustom Warna</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-400 uppercase">Warna Utama</label>
+                        <div className="flex items-center space-x-2">
+                          <input type="color" value={profile.themeSettings?.primaryColor || '#facc15'} onChange={(e) => handleThemeChange({ primaryColor: e.target.value })} className="w-8 h-8 rounded border-none" />
+                          <input type="text" value={profile.themeSettings?.primaryColor || '#facc15'} onChange={(e) => handleThemeChange({ primaryColor: e.target.value })} className="flex-1 text-[10px] font-mono px-2 py-1 rounded border border-gray-200" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-400 uppercase">Warna Sekunder</label>
+                        <div className="flex items-center space-x-2">
+                          <input type="color" value={profile.themeSettings?.secondaryColor || '#eab308'} onChange={(e) => handleThemeChange({ secondaryColor: e.target.value })} className="w-8 h-8 rounded border-none" />
+                          <input type="text" value={profile.themeSettings?.secondaryColor || '#eab308'} onChange={(e) => handleThemeChange({ secondaryColor: e.target.value })} className="flex-1 text-[10px] font-mono px-2 py-1 rounded border border-gray-200" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-400 uppercase">Warna Aksen</label>
+                        <div className="flex items-center space-x-2">
+                          <input type="color" value={profile.themeSettings?.accentColor || '#000000'} onChange={(e) => handleThemeChange({ accentColor: e.target.value })} className="w-8 h-8 rounded border-none" />
+                          <input type="text" value={profile.themeSettings?.accentColor || '#000000'} onChange={(e) => handleThemeChange({ accentColor: e.target.value })} className="flex-1 text-[10px] font-mono px-2 py-1 rounded border border-gray-200" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-400 uppercase">Warna Teks</label>
+                        <div className="flex items-center space-x-2">
+                          <input type="color" value={profile.themeSettings?.textColor || '#111827'} onChange={(e) => handleThemeChange({ textColor: e.target.value })} className="w-8 h-8 rounded border-none" />
+                          <input type="text" value={profile.themeSettings?.textColor || '#111827'} onChange={(e) => handleThemeChange({ textColor: e.target.value })} className="flex-1 text-[10px] font-mono px-2 py-1 rounded border border-gray-200" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-400 uppercase">Background</label>
+                        <div className="flex items-center space-x-2">
+                          <input type="color" value={profile.themeSettings?.backgroundColor || '#ffffff'} onChange={(e) => handleThemeChange({ backgroundColor: e.target.value })} className="w-8 h-8 rounded border-none" />
+                          <input type="text" value={profile.themeSettings?.backgroundColor || '#ffffff'} onChange={(e) => handleThemeChange({ backgroundColor: e.target.value })} className="flex-1 text-[10px] font-mono px-2 py-1 rounded border border-gray-200" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-400 uppercase">Warna Kartu</label>
+                        <div className="flex items-center space-x-2">
+                          <input type="color" value={profile.themeSettings?.cardColor || '#ffffff'} onChange={(e) => handleThemeChange({ cardColor: e.target.value })} className="w-8 h-8 rounded border-none" />
+                          <input type="text" value={profile.themeSettings?.cardColor || '#ffffff'} onChange={(e) => handleThemeChange({ cardColor: e.target.value })} className="flex-1 text-[10px] font-mono px-2 py-1 rounded border border-gray-200" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <label className="text-[10px] font-black text-gray-400 uppercase">Lengkungan Sudut (Radius)</label>
+                    <select 
+                      value={profile.themeSettings?.borderRadius || '1.5rem'} 
+                      onChange={(e) => handleThemeChange({ borderRadius: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-white border-2 border-transparent focus:border-yellow-400 outline-none font-bold text-sm"
+                    >
+                      <option value="0px">Tajam (0px)</option>
+                      <option value="0.5rem">Kecil (8px)</option>
+                      <option value="1rem">Sedang (16px)</option>
+                      <option value="1.5rem">Besar (24px)</option>
+                      <option value="2.5rem">Sangat Besar (40px)</option>
+                      <option value="9999px">Full Bulat</option>
+                    </select>
+                  </div>
+
+                  <button 
+                    onClick={handleSaveProfile} 
+                    disabled={syncing}
+                    className="w-full bg-black text-yellow-400 font-black py-4 rounded-xl shadow-lg hover:bg-yellow-400 hover:text-black transition-all disabled:opacity-50"
+                  >
+                    {syncing ? 'MENYIMPAN...' : 'SIMPAN TEMA'}
                   </button>
                 </div>
               )}

@@ -21,8 +21,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   };
 
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-gray-100 flex flex-col h-full hover:-translate-y-1">
-      <div className="relative overflow-hidden aspect-video bg-gray-50 flex items-center justify-center">
+    <div 
+      className="group overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border flex flex-col h-full hover:-translate-y-1"
+      style={{ backgroundColor: 'var(--card)', borderRadius: 'var(--radius)', borderColor: 'rgba(0,0,0,0.05)' }}
+    >
+      <div className="relative overflow-hidden aspect-video flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.02)' }}>
         {!imgError ? (
           <img 
             src={project.imageUrl || fallbackImage} 
@@ -31,27 +34,27 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full bg-yellow-50 flex flex-col items-center justify-center p-6 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-yellow-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center" style={{ backgroundColor: 'rgba(var(--primary), 0.1)' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: 'var(--primary)' }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span className="text-[10px] font-black text-yellow-600 uppercase tracking-tighter">Gambar Tidak Tersedia</span>
+            <span className="text-[10px] font-black uppercase tracking-tighter" style={{ color: 'var(--secondary)' }}>Gambar Tidak Tersedia</span>
           </div>
         )}
         
         {project.category && (
           <div className="absolute top-4 left-4">
-            <span className="bg-yellow-400 text-black text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+            <span className="text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg" style={{ backgroundColor: 'var(--primary)', color: 'var(--accent)' }}>
               {project.category}
             </span>
           </div>
         )}
       </div>
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">
+        <h3 className="text-xl font-bold mb-2 transition-colors" style={{ color: 'var(--text)' }}>
           {project.title}
         </h3>
-        <p className="text-gray-600 text-sm mb-6 line-clamp-3 flex-grow leading-relaxed">
+        <p className="text-sm mb-6 line-clamp-3 flex-grow leading-relaxed opacity-70" style={{ color: 'var(--text)' }}>
           {project.description}
         </p>
         
@@ -60,7 +63,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           onClick={handleAction}
           target={project.actionType === 'internal' ? undefined : "_blank"}
           rel={project.actionType === 'internal' ? undefined : "noopener noreferrer"}
-          className="w-full bg-black text-yellow-400 hover:bg-yellow-400 hover:text-black font-bold py-3 rounded-xl text-center transition-all duration-300 flex items-center justify-center space-x-2 shadow-md"
+          className="w-full font-bold py-3 rounded-xl text-center transition-all duration-300 flex items-center justify-center space-x-2 shadow-md"
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--primary)' }}
         >
           <span>{project.actionType === 'internal' ? 'Lihat Detail' : 'Buka Aplikasi'}</span>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

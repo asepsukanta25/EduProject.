@@ -101,8 +101,8 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen pb-20 bg-white">
-      <section className="theme-gradient py-16 md:py-24 relative overflow-hidden">
+    <div className="min-h-screen pb-20" style={{ backgroundColor: 'var(--bg)' }}>
+      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
           <div className="mb-8 animate-bounce-slow flex flex-col items-center">
             {logoUrl ? (
@@ -113,23 +113,24 @@ const Home: React.FC = () => {
               />
             ) : (
               <div className="flex items-center justify-center">
-                <div className="w-20 h-20 md:w-28 md:h-28 bg-black rounded-[2rem] flex items-center justify-center text-yellow-400 text-5xl md:text-6xl font-black shadow-2xl transform -rotate-6">
+                <div className="w-20 h-20 md:w-28 md:h-28 rounded-[2rem] flex items-center justify-center text-5xl md:text-6xl font-black shadow-2xl transform -rotate-6" style={{ backgroundColor: 'var(--accent)', color: 'var(--primary)' }}>
                   E
                 </div>
-                <span className="ml-4 text-4xl md:text-6xl font-black text-black tracking-tighter">Project</span>
+                <span className="ml-4 text-4xl md:text-6xl font-black tracking-tighter" style={{ color: 'var(--accent)' }}>Project</span>
               </div>
             )}
           </div>
-          <p className="text-xl font-black uppercase mb-10 tracking-widest text-black/80">Katalog Proyek Edukasi</p>
+          <p className="text-xl font-black uppercase mb-10 tracking-widest opacity-80" style={{ color: 'var(--accent)' }}>Katalog Proyek Edukasi</p>
           <div className="relative max-w-lg mx-auto">
             <input 
               type="text" 
               placeholder="Cari berdasarkan judul atau kategori..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-8 py-5 rounded-full shadow-2xl focus:outline-none border-2 border-transparent focus:border-black transition-all text-lg font-medium"
+              className="w-full px-8 py-5 rounded-full shadow-2xl focus:outline-none border-2 border-transparent transition-all text-lg font-medium"
+              style={{ backgroundColor: 'var(--card)', color: 'var(--text)' }}
             />
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400">
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-40">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -137,15 +138,15 @@ const Home: React.FC = () => {
           </div>
         </div>
         {/* Background blobs for aesthetics */}
-        <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-black/5 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
+        <div className="absolute top-0 left-0 w-64 h-64 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" style={{ backgroundColor: 'rgba(0,0,0,0.05)' }}></div>
       </section>
 
       <section className="max-w-7xl mx-auto px-4 -mt-10 relative z-10">
         {loading ? (
           <div className="py-32 text-center">
-             <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-yellow-400 mb-4"></div>
-             <p className="font-black text-gray-400 uppercase tracking-widest">Sinkronisasi Cloud...</p>
+             <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 mb-4" style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }}></div>
+             <p className="font-black opacity-40 uppercase tracking-widest">Sinkronisasi Cloud...</p>
           </div>
         ) : (
           <div 

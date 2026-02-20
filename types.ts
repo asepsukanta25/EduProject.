@@ -23,6 +23,16 @@ export interface LayoutSettings {
   preset: 'standard' | 'adaptive' | 'masonry' | 'custom';
 }
 
+export interface ThemeSettings {
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  textColor: string;
+  backgroundColor: string;
+  cardColor: string;
+  borderRadius: string;
+}
+
 export interface DeveloperProfile {
   name: string;
   role: string;
@@ -36,6 +46,7 @@ export interface DeveloperProfile {
   githubLabel?: string;
   socialLabel?: string;
   layoutSettings?: LayoutSettings;
+  themeSettings?: ThemeSettings;
 }
 
 export enum StorageKey {
