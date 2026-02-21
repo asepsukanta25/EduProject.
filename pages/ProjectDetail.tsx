@@ -117,13 +117,13 @@ const ProjectDetail: React.FC = () => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="columns-1 md:columns-2 gap-6 space-y-6">
                 {galleryImages.map((img, idx) => (
-                  <div key={idx} className="overflow-hidden shadow-xl group border" style={{ borderRadius: 'var(--radius)', borderColor: 'rgba(0,0,0,0.05)' }}>
+                  <div key={idx} className="break-inside-avoid overflow-hidden shadow-xl group border" style={{ borderRadius: 'var(--radius)', borderColor: 'rgba(0,0,0,0.05)' }}>
                     <img 
                       src={img} 
                       alt={`Gallery ${idx}`} 
-                      className="w-full h-64 md:h-80 object-cover group-hover:scale-105 transition-transform duration-700 cursor-zoom-in" 
+                      className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700 cursor-zoom-in block" 
                       onClick={() => window.open(img, '_blank')}
                       loading="lazy"
                     />
