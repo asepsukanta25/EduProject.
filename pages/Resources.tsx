@@ -78,7 +78,7 @@ const Resources: React.FC = () => {
                   download 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-3 px-8 py-4 rounded-2xl font-black transition-all active:scale-95 shadow-lg group"
+                  className="w-full md:w-auto flex items-center justify-center space-x-3 px-6 py-3 md:px-8 md:py-4 rounded-2xl font-black transition-all active:scale-95 shadow-lg group"
                   style={{ backgroundColor: 'var(--accent)', color: 'var(--primary)' }}
                 >
                   <div className="bg-white/10 p-2 rounded-lg group-hover:scale-110 transition-transform">
