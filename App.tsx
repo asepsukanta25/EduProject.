@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Resources from './pages/Resources';
 import About from './pages/About';
 import Admin from './pages/Admin';
 import ProjectDetail from './pages/ProjectDetail';
@@ -48,6 +49,7 @@ const App: React.FC = () => {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/resources" element={<Resources />} />
             <Route path="/about" element={<About />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/project/:id" element={<ProjectDetail />} />

@@ -41,6 +41,13 @@ const Navbar: React.FC = () => {
               Beranda
             </Link>
             <Link 
+              to="/resources" 
+              className={`h-full flex items-center px-1 text-[13px] sm:text-sm transition-all duration-300 ${isActive('/resources')}`}
+              style={activeStyle('/resources')}
+            >
+              Sumber Daya
+            </Link>
+            <Link 
               to="/about" 
               className={`h-full flex items-center px-1 text-[13px] sm:text-sm transition-all duration-300 ${isActive('/about')}`}
               style={activeStyle('/about')}

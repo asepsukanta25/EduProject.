@@ -1,5 +1,5 @@
 
-import { Project, DeveloperProfile } from '../types';
+import { Project, DeveloperProfile, DownloadItem } from '../types';
 import { supabase } from './supabaseClient';
 
 export const storageService = {
@@ -144,5 +144,68 @@ export const storageService = {
       const { error } = await supabase.from('profiles').insert([profilePayload]);
       if (error) throw error;
     }
+  },
+
+  // --- RESOURCES / DOWNLOADS ---
+  async getResources(): Promise<DownloadItem[]> {
+    const { data, error } = await supabase
+      .from('resources')
+      .select('*')
+      .order('order', { ascending: true });
+
+    if (error) {
+      console.error('Gagal mengambil resource:', error);
+      return [];
+    }
+
+    return data.map(item => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      fileUrl: item.file_url,
+      fileType: item.file_type as 'excel' | 'json',
+      order: item.order
+    }));
+  },
+
+  async saveResource(resource: Partial<DownloadItem>): Promise<boolean> {
+    const payload = {
+      title: resource.title,
+      description: resource.description,
+      file_url: resource.fileUrl,
+      file_type: resource.fileType,
+      order: resource.order || 0
+    };
+
+    let result;
+    if (resource.id) {
+      result = await supabase
+        .from('resources')
+        .update(payload)
+        .eq('id', resource.id);
+    } else {
+      result = await supabase
+        .from('resources')
+        .insert([payload]);
+    }
+
+    if (result.error) {
+      console.error('Gagal menyimpan resource:', result.error);
+      return false;
+    }
+    return true;
+  },
+
+  async deleteResource(id: string): Promise<boolean> {
+    const { error } = await supabase
+      .from('resources')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Gagal menghapus resource:', error);
+      return false;
+    }
+    return true;
   }
 };

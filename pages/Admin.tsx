@@ -1,5 +1,5 @@
 
-import { Project, DeveloperProfile } from '../types';
+import { Project, DeveloperProfile, DownloadItem } from '../types';
 import { storageService } from '../services/storageService';
 import React, { useState, useEffect } from 'react';
 
@@ -9,6 +9,7 @@ const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessCode, setAccessCode] = useState('');
   const [projects, setProjects] = useState<Project[]>([]);
+  const [resources, setResources] = useState<DownloadItem[]>([]);
   const [profile, setProfile] = useState<DeveloperProfile | null>(null);
   const [error, setError] = useState('');
   const [syncing, setSyncing] = useState(false);
@@ -18,6 +19,9 @@ const Admin: React.FC = () => {
 
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
+
+  const [editingResource, setEditingResource] = useState<DownloadItem | null>(null);
+  const [showResourceModal, setShowResourceModal] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -36,8 +40,10 @@ const Admin: React.FC = () => {
     setSyncing(true);
     try {
       const pData = await storageService.getProjects();
+      const rData = await storageService.getResources();
       const profData = await storageService.getProfile();
       setProjects(pData);
+      setResources(rData);
       setProfile(profData);
       setIsConnected(true);
       if (manual) {
@@ -85,6 +91,38 @@ const Admin: React.FC = () => {
         await storageService.deleteProject(id);
         await refreshData();
         showNotification('Proyek berhasil dihapus!');
+      } catch (err: any) {
+        showNotification('Gagal menghapus: ' + err.message, true);
+      } finally {
+        setSyncing(false);
+      }
+    }
+  };
+
+  const handleSaveResource = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingResource) return;
+    setSyncing(true);
+    try {
+      await storageService.saveResource(editingResource);
+      await refreshData();
+      setShowResourceModal(false);
+      setEditingResource(null);
+      showNotification('Resource berhasil disimpan!');
+    } catch (err: any) {
+      showNotification('Gagal simpan: ' + (err.message || 'Error'), true);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const handleDeleteResource = async (id: string) => {
+    if (window.confirm('Hapus resource ini secara permanen?')) {
+      setSyncing(true);
+      try {
+        await storageService.deleteResource(id);
+        await refreshData();
+        showNotification('Resource berhasil dihapus!');
       } catch (err: any) {
         showNotification('Gagal menghapus: ' + err.message, true);
       } finally {
@@ -241,16 +279,27 @@ const Admin: React.FC = () => {
               onClick={() => { setEditingProject({ id: '', title: '', description: '', imageUrl: '', externalUrl: '', category: '', order: (projects.length + 1), actionType: 'external' }); setShowProjectModal(true); }} 
               className="flex-1 md:flex-none bg-yellow-400 text-black px-6 py-4 rounded-2xl font-black text-sm shadow-lg shadow-yellow-200 hover:-translate-y-1 transition-all"
             >
-              + TAMBAH KONTEN
+              + PROYEK
+            </button>
+            <button 
+              onClick={() => { setEditingResource({ id: '', title: '', description: '', fileUrl: '', fileType: 'excel', order: (resources.length + 1) }); setShowResourceModal(true); }} 
+              className="flex-1 md:flex-none bg-black text-yellow-400 px-6 py-4 rounded-2xl font-black text-sm shadow-lg hover:-translate-y-1 transition-all"
+            >
+              + RESOURCE
+            </button>
+            <button onClick={() => refreshData(true)} className="bg-gray-100 p-4 rounded-2xl hover:bg-gray-200 transition-all" title="Refresh Data">
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${syncing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
             </button>
             <button onClick={() => setIsAuthenticated(false)} className="bg-red-50 text-red-600 px-6 py-4 rounded-2xl font-black text-sm hover:bg-red-100 transition-all uppercase tracking-tight">Keluar</button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Katalog Proyek */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden h-full">
+          {/* Katalog Proyek & Sumber Daya */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden">
               <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
                 <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Katalog Konten</h2>
                 <span className="text-[10px] font-black bg-black text-yellow-400 px-3 py-1 rounded-full uppercase">{projects.length} Item</span>
@@ -315,6 +364,60 @@ const Admin: React.FC = () => {
 
               {projects.length === 0 && (
                 <div className="py-20 text-center text-gray-400 italic font-bold">Belum ada konten proyek.</div>
+              )}
+            </div>
+
+            {/* Sumber Daya Section */}
+            <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden">
+              <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center bg-gray-950 text-white">
+                <h2 className="text-lg font-black uppercase tracking-tight">Sumber Daya (Download)</h2>
+                <span className="text-[10px] font-black bg-yellow-400 text-black px-3 py-1 rounded-full uppercase">{resources.length} Item</span>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead className="bg-gray-50 text-gray-400 uppercase text-[10px] font-black">
+                    <tr>
+                      <th className="px-8 py-5 w-20">No</th>
+                      <th className="px-8 py-5">Judul Resource</th>
+                      <th className="px-8 py-5">Tipe</th>
+                      <th className="px-8 py-5 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {resources.map((item) => (
+                      <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-8 py-6">
+                          <span className="text-[11px] font-black text-gray-400">#{item.order}</span>
+                        </td>
+                        <td className="px-8 py-6">
+                          <div className="font-bold text-gray-900">{item.title}</div>
+                          <div className="text-[10px] text-gray-400 truncate max-w-[200px]">{item.description}</div>
+                        </td>
+                        <td className="px-8 py-6">
+                          <span className={`text-[9px] font-black px-2 py-1 rounded-lg uppercase ${item.fileType === 'excel' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                            {item.fileType}
+                          </span>
+                        </td>
+                        <td className="px-8 py-6 text-right space-x-2">
+                          <button onClick={() => { setEditingResource(item); setShowResourceModal(true); }} className="p-2 bg-gray-100 hover:bg-black hover:text-white rounded-lg transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button onClick={() => handleDeleteResource(item.id)} className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {resources.length === 0 && (
+                <div className="py-12 text-center text-gray-400 italic text-sm">Belum ada resource download.</div>
               )}
             </div>
           </div>
@@ -764,6 +867,61 @@ const Admin: React.FC = () => {
 
               <button type="submit" disabled={syncing} className="w-full bg-black text-yellow-400 font-black py-5 rounded-2xl shadow-xl hover:bg-yellow-400 hover:text-black transition-all flex-shrink-0 active:scale-95">
                 {syncing ? 'PROSES MENYIMPAN...' : 'SIMPAN KE DATABASE CLOUD'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Resource Modal */}
+      {showResourceModal && editingResource && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+            <div className="bg-gray-950 p-8 text-white flex justify-between items-center">
+              <div>
+                <h3 className="text-2xl font-black uppercase tracking-tight">Kelola Resource</h3>
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Downloadable Assets</p>
+              </div>
+              <button onClick={() => setShowResourceModal(false)} className="w-12 h-12 bg-white/10 hover:bg-red-600 rounded-2xl flex items-center justify-center transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveResource} className="p-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Judul Resource</label>
+                  <input required value={editingResource.title} onChange={(e) => setEditingResource({...editingResource, title: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 font-bold" placeholder="Contoh: Data Statistik 2024" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Tipe Berkas</label>
+                  <select value={editingResource.fileType} onChange={(e) => setEditingResource({...editingResource, fileType: e.target.value as 'excel' | 'json'})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 font-bold">
+                    <option value="excel">Microsoft Excel (.xlsx)</option>
+                    <option value="json">JSON Data (.json)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Deskripsi Resource</label>
+                <textarea required rows={3} value={editingResource.description} onChange={(e) => setEditingResource({...editingResource, description: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 text-sm font-medium" placeholder="Jelaskan isi dari berkas ini..." />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">URL Berkas (Direct Download Link)</label>
+                <input required value={editingResource.fileUrl} onChange={(e) => setEditingResource({...editingResource, fileUrl: e.target.value})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 text-xs font-mono" placeholder="https://link-ke-file.xlsx" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-1">Urutan</label>
+                  <input type="number" required value={editingResource.order} onChange={(e) => setEditingResource({...editingResource, order: parseInt(e.target.value) || 0})} className="w-full px-5 py-4 rounded-2xl border-2 bg-gray-50 font-black text-center" />
+                </div>
+              </div>
+
+              <button type="submit" disabled={syncing} className="w-full bg-black text-yellow-400 font-black py-5 rounded-2xl shadow-xl hover:bg-yellow-400 hover:text-black transition-all active:scale-95">
+                {syncing ? 'MENYIMPAN...' : 'SIMPAN RESOURCE'}
               </button>
             </form>
           </div>

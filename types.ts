@@ -49,6 +49,15 @@ export interface DeveloperProfile {
   themeSettings?: ThemeSettings;
 }
 
+export interface DownloadItem {
+  id: string;
+  title: string;
+  description: string;
+  fileUrl: string;
+  fileType: 'excel' | 'json';
+  order: number;
+}
+
 export enum StorageKey {
   PROJECTS = 'edu_projects',
   PROFILE = 'edu_profile'
